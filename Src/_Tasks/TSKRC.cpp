@@ -14,9 +14,7 @@ void StartTaskRC(void const * argument)
   for(;;)
   {
     rc_time = osMessageGet(queueRc, osWaitForever);
-     printf("Task RC begin\n");
     rc.rcDecoder.putSample(rc_time.value.v);
-     printf("Task RC end\n");
     
   }
   // USER CODE END StartTask03

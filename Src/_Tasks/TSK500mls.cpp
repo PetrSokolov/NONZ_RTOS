@@ -60,7 +60,6 @@ void StartTask500mls(void const * argument)
   for(;;)
   {
     osSemaphoreWait(binarySemTSK500mls, osWaitForever);
-    printf("Task 500 begin\n");
 
     rc.handler();
     menuEngine.handler();
@@ -74,11 +73,11 @@ void StartTask500mls(void const * argument)
 //    bms0.dischargeControl(0xAA);
 //    bms0.closingControl(0xAA);
     
-    mram.resetWriteProtect();
+/*    mram.resetWriteProtect();
     mram.writeEnable();
     mram.readStatusRegister();
     mram.writeDataBytes();
-    mram.readDataBytes();
+    mram.readDataBytes();*/
 /*    bms0.dischargeControl(0x0);
     bms1.dischargeControl(0);
     bms2.dischargeControl(0);
@@ -115,7 +114,6 @@ void StartTask500mls(void const * argument)
     bms9.balanceControl(0xFFF);
     bms10.balanceControl(0xFFF);*/
 
-    printf("Task 500 end\n");
   }
 }
 

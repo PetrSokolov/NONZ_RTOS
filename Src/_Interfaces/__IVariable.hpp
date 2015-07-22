@@ -27,11 +27,11 @@ class IVariable{
                    void     putToVarMap (IVariable* variable); // Положить в карту элемент (объект IVariable)
 
     // Методы, возвращающие значение параметра
-    virtual inline int32_t getValue  (void) =0;            // Возвращает значение параметра
+    virtual inline int32_t  getValue  (void) =0;            // Возвращает значение параметра
     virtual inline void     setValue  (int32_t value) =0;  // Устанавливает значение параметра
     // Методы, возвращающие атрибуты
-    virtual inline int32_t getMin    (void) =0;            // Возвращает минимальное значение параметра
-    virtual inline int32_t getMax    (void) =0;            // Возвращает максимальное значение параметра
+    virtual inline int32_t  getMin    (void) =0;            // Возвращает минимальное значение параметра
+    virtual inline int32_t  getMax    (void) =0;            // Возвращает максимальное значение параметра
     virtual inline uint16_t getVarId  (void) =0;            // Возвращает id объекта(параметра), если он есть
     virtual inline uint8_t  getRw 	  (void) =0;            // Возвращает разрешение на запись параметра
 

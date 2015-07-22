@@ -54,6 +54,8 @@ void MenuEngine::findAvailableElements(vector<IMenuItem*> &resultVector, char* i
    for (i=0; i < n; i++){
      string_found = strstr (_menuIdVector[i]->getMenu(),indexString);
      if(string_found){  // Символ найден
+//       printf("Find %s in %s\n", indexString, _menuIdVector[i]->getMenu());
+//       printf("str %s\n\n", string_found);
        // Если после indexString есть точка, и она является последней, то это элемент текущего меню 
        first_point = strchr((string_found + lenthIndexString),'.');
        last_point = strrchr((string_found + lenthIndexString),'.');

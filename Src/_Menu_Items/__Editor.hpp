@@ -49,13 +49,13 @@ class Editor : public IControlCommands, public IDisplayed{
 
   // Методы, используемые при работе с объектом IVariable
     inline void setVariable    (IVariable* variable) { _variable = variable; startEditing(); }
-    inline void startEditing   (void)                { editingValue = _variable->getValue(); }            // Начало редактирования параметра
-    inline void endEditing     (void)                { _variable->setValue ( editingValue ); }            // Завершение редактирования параметра. С последующей командой на сохранение.
-    inline void exitEditing    (void) {}            // Выход из редактирования параметра (без сохранения результата)
-           void incValueHandler(uint16_t x, uint8_t power);   // Инкремент параметра
-           void decValueHandler(uint16_t x, uint8_t power);   // Декремент параметра
-//    virtual        void enterHandler  (void) =0;            // Обработчик ввода при редактировании параметра
-    virtual inline int32_t getEditingValue(void) { return editingValue; }       // Выход из редактирования параметра (без сохранения результата)
+    inline void startEditing   (void)                { editingValue = _variable->getValue(); }       // Начало редактирования параметра
+    inline void endEditing     (void)                { _variable->setValue ( editingValue ); }       // Завершение редактирования параметра. С последующей командой на сохранение.
+    inline void exitEditing    (void) {}                                                             // Выход из редактирования параметра (без сохранения результата)
+           void incValueHandler(uint16_t x, uint8_t power);                                          // Инкремент параметра
+           void decValueHandler(uint16_t x, uint8_t power);                                          // Декремент параметра
+           void enterHandler  (void);                                                                // Обработчик ввода при редактировании параметра
+    inline int32_t getEditingValue(void) { return editingValue; }                                    // Возвращает значение, обрабатываемое редактором
 
     // Режимы редактора
     inline uint8_t getViewerMode (void) { return _viewerMode; }

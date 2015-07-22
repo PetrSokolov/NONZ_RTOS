@@ -5,11 +5,9 @@ void StartTaskSpi1(void const * argument)
 {
   for(;;)
   {
-    printf("Task SPI_1 begin\n");
 
     spi1Handler.handler();
 
-    printf("Task SPI_1 end\n");
 
   }
 

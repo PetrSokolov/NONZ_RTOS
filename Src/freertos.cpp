@@ -252,7 +252,7 @@ void MX_FREERTOS_Init(void) {
   
   // Start OS Timers
   osTimerStart (Timer5mlsHandle, 5); 
-  osTimerStart (Timer500mlsHandle, 1000); 
+  osTimerStart (Timer500mlsHandle, 300); 
   osTimerStart (Timer1000mlsHandle, 1000); 
   osTimerStart (myTimer02Handle, 100); 
   osTimerStart (myTimer03Handle, 500); 

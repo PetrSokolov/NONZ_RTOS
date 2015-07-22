@@ -27,33 +27,19 @@ void StartTask1000mls(void const * argument)
 //  char transferChars[128];  // Возможно превышает кучу, сваливалось в хардфаулт
 //  uint16_t timeCharge=0, size;
 //  float valueCharge = 1.234;
- uint8_t bmsNr;
- Bms* bms;
+// uint8_t bmsNr;
+// Bms* bms;
 
   for(;;)
   {
     
     osSemaphoreWait(binarySemTSK1000mls, osWaitForever);
-    printf("Task 1000 begin\n");
-
-/*   ITM_SendCharX (1, 1);
-   ITM_SendCharX (2, 2);
-   ITM_SendCharX (3, 3);
-   ITM_SendCharX (4, 4);
-   ITM_SendCharX (5, 5);
-   ITM_SendCharX (6, 6);
-   ITM_SendCharX (7, 7);
-   ITM_SendCharX (8, 8);
-   ITM_SendCharX (9, 9);
-   ITM_SendCharX (10, 10);
-   ITM_SendCharX (11, 11);
-   ITM_SendCharX (12, 12);*/
-
-    //    printf("Periodic 1000mls\n");
     
+//    printf("Size of variables %d\n", containerOfVariables.getCountOfContents());
+//    printf("id 202 =  %d\n", containerOfVariables.getContent(202)->getValue());
+
     //ITMLOG 1 >D:\BMS3_2A.csv   
- //   size = sprintf(transferChars, "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", timeCharge++, bms6.getCellVoltage(0),bms6.getCellVoltage(1),bms6.getCellVoltage(2),bms6.getCellVoltage(3),bms6.getCellVoltage(4),bms6.getCellVoltage(5),bms6.getCellVoltage(6),bms6.getCellVoltage(7),bms6.getCellVoltage(8),bms6.getCellVoltage(9),bms6.getCellVoltage(10),bms6.getCellVoltage(11));
-   timeCharge++;
+/*   timeCharge++;
    
    for (bmsNr =0; bmsNr<11; bmsNr++){
      switch(bmsNr){
@@ -77,8 +63,7 @@ void StartTask1000mls(void const * argument)
        ITM_SendCharX (bmsNr+1, '\n');
        osDelay(1);
      }
-   }
-   printf("Task 1000 end\n");
+   }*/
   }
 }
 

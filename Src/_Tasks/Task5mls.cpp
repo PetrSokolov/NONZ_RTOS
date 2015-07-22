@@ -10,10 +10,7 @@ void StartTask5mls(void const * argument)
   for(;;)
   {
     osSemaphoreWait(binarySemTSK5mls, osWaitForever);
-    printf("Task 2 begin\n");
     displayLed4Digit.display();
-     printf("Task 2 end\n");
-//    osDelay(5);
 
 
   }

@@ -6,16 +6,16 @@
 #include <stdio.h>
 
 
-__STATIC_INLINE uint32_t ITM_SendCharX (uint32_t Channel, uint32_t Data)
+/*__STATIC_INLINE uint32_t ITM_SendCharX (uint32_t Channel, uint32_t Data)
 {
-  if ((ITM->TCR & ITM_TCR_ITMENA_Msk) &&      /* ITM enabled */
-      (ITM->TER & (1UL << Channel) ) )        /* ITM Port X enabled */
+  if ((ITM->TCR & ITM_TCR_ITMENA_Msk) &&      // ITM enabled
+      (ITM->TER & (1UL << Channel) ) )        // ITM Port X enabled
   {
     while (ITM->PORT[Channel].u32 == 0);
     ITM->PORT[Channel].u8 = (uint8_t) Data;
   }
   return (Data);
-}
+}*/
 
 
 char transferChars[200];  // Возможно превышает кучу, сваливалось в хардфаулт

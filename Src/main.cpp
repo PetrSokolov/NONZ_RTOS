@@ -68,6 +68,7 @@ void MX_FREERTOS_Init(void);
 /* USER CODE END 0 */
 
 int main(void)
+
 {
 
   /* USER CODE BEGIN 1 */

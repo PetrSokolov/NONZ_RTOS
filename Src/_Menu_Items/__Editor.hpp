@@ -50,7 +50,7 @@ class Editor : public IControlCommands, public IDisplayed{
   // Методы, используемые при работе с объектом IVariable
     inline void setVariable    (IVariable* variable) { _variable = variable; startEditing(); }
     inline void startEditing   (void)                { editingValue = _variable->getValue(); }       // Начало редактирования параметра
-    inline void endEditing     (void)                { _variable->setValue ( editingValue ); }       // Завершение редактирования параметра. С последующей командой на сохранение.
+    inline Bool endEditing     (void)                { if (getModificationMode()==TRUE) {return _variable->setValue( editingValue );} else {return _variable->setValue( _variable->getValue() );} }       // Завершение редактирования параметра. С последующей командой на сохранение.
     inline void exitEditing    (void) {}                                                             // Выход из редактирования параметра (без сохранения результата)
            void incValueHandler(uint16_t x, uint8_t power);                                          // Инкремент параметра
            void decValueHandler(uint16_t x, uint8_t power);                                          // Декремент параметра
@@ -58,17 +58,17 @@ class Editor : public IControlCommands, public IDisplayed{
     inline int32_t getEditingValue(void) { return editingValue; }                                    // Возвращает значение, обрабатываемое редактором
 
     // Режимы редактора
-    inline uint8_t getViewerMode (void) { return _viewerMode; }
-    inline void    setViewerMode (void) { _viewerMode = 1; }
-    inline void    clrViewerMode (void) { _viewerMode = 0; }
-    inline uint8_t getModificationMode (void) { return _modificationMode; }
-    inline void    setModificationMode (void) { _modificationMode = 1; }
-    inline void    clrModificationMode (void) { _modificationMode = 0; }
+    inline Bool    getViewerMode (void) { return _viewerMode; }
+    inline void    setViewerMode (Bool mode) { _viewerMode = mode; }
+//    inline void    clrViewerMode (void) { _viewerMode = 0; }
+    inline Bool    getModificationMode (void) { return _modificationMode; }
+    inline void    setModificationMode (Bool state) { _modificationMode = state; }
+//    inline void    clrModificationMode (void) { _modificationMode = 0; }
 
   private:
-    IVariable*  _variable;               //  Редактируемый объект
-    uint8_t     _viewerMode :1;          //  Режим просмотра значения (1-включени/0-отключен)
-    uint8_t     _modificationMode :1;    //  Режим изменения значения (1-включени/0-отключен)
+    IVariable*  _variable;            // Редактируемый объект
+    Bool        _viewerMode;       // Режим просмотра значения (1-включени/0-отключен)
+    Bool        _modificationMode;    // Режим изменения значения (TRUE-включен/FALSE-отключен)
     static int32_t  editingValue;     // Переменная, используемая при редактировании параметра
 
   

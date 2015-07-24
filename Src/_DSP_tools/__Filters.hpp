@@ -12,13 +12,15 @@
 #define MEAN_FILTER_H
 
 #include "stdint.h"
-#include "math.h"
+//#include "math.h"
+#include <cmath>
 
 
 #ifdef __cplusplus
  extern "C" {
 #endif 
 
+using namespace std;   
 namespace src{	 
 	 
 

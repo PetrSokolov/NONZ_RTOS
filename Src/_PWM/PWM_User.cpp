@@ -13,7 +13,8 @@
 #include "..\_Objects_Definitions\__ObjectsDefinitions.hpp"
 #include "tim.h"
 #include "stdint.h"
-#include "math.h"
+//#include "math.h"
+#include <cmath>
 
 
 
@@ -101,9 +102,9 @@ void Pwm2phaseNONZ::init (void)
   
 
   // Инизиализация указателей на настроечные параметры
-/* bugfix */   _deathTime = &pwmDeathTime;     //  Указатель на настроечный параметр. death time[мкс]
+/* bugfix    _deathTime = &pwmDeathTime;     //  Указатель на настроечный параметр. death time[мкс]
   _value     = &pwmValue;         //  Указатель на настроечный параметр. Амплитуда [%]
-  
+*/
   _clkTimer = HAL_RCC_GetPCLK2Freq() *2;
 		// Расчет частоты семплирования dead-time (dead-time and sampling clock)
 		switch(tim->CR1 & TIM_CR1_CKD){

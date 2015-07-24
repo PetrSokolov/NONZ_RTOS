@@ -21,22 +21,26 @@ namespace src{
 // Конструктор без параметров. Устанавливаются значения по умолчанию ts = 200mks, tf = 0.1sec
 AnalogRmsSensor::AnalogRmsSensor()
  {
-	putTsTf	(0.0002, 0.1);
+	_meanFilter.putTsTf	(0.0002, 0.5);
+	_rmsFilter.putTsTf	(0.0002, 0.1);
  }
 
 
 // Конструктор с параметрами
-AnalogRmsSensor::AnalogRmsSensor (float ts, float tf)// : AnalogSensor(ts, tf)
+AnalogRmsSensor::AnalogRmsSensor (float tsMean, float tfMean, float tsRms, float tfRms, IVariable* scaleFactor, IVariable* scaleZero)
 {
-	putTsTf		(ts, tf);
+	_scaleFactor = scaleFactor;
+  _scaleZero   = scaleZero;
+  _meanFilter.putTsTf		(tsMean, tfMean);
+	_rmsFilter.putTsTf		(tsRms, tfRms);
 }
 
 // Установить калибровочный коэффициент
-void AnalogRmsSensor::setCalibration	(uint16_t value)
+/*void AnalogRmsSensor::setCalibration	(uint16_t value)
 {
 	_calibration_value = (float)value;
-	_calibration_value *= 0.0001;
-}
+	_calibration_value *= (float)0.0001;
+}*/
 
 //======================================================================================================================== 
 // Class AnalogMeanSensor
@@ -50,17 +54,17 @@ AnalogMeanSensor::AnalogMeanSensor()
 
 
 // Конструктор с параметрами
-AnalogMeanSensor::AnalogMeanSensor (float ts, float tf)// : AnalogSensor(ts, tf)
+AnalogMeanSensor::AnalogMeanSensor (float tsMean, float tfMean)// : AnalogSensor(ts, tf)
 {
-	putTsTf		(ts, tf);
+	putTsTf		(tsMean, tfMean);
 }
 
 // Установить калибровочный коэффициент
-void AnalogMeanSensor::setCalibration	(uint16_t value)
+/*void AnalogMeanSensor::setCalibration	(uint16_t value)
 {
 	_calibration_value = (float)value;
-	_calibration_value *= 0.0001;
-}
+	_calibration_value *= (float)0.0001;
+}*/
 
 }
 

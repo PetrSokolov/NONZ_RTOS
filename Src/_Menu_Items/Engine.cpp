@@ -184,7 +184,7 @@ void  MenuEngine::menuMoveForward (void)
   if(var != NULL){
    printf("Is Variable\n");
    _editor.setVariable(var);                     //  Передача редактору объекта типа IVariable
-   _editor.setViewerMode();
+   _editor.setViewerMode(TRUE);
   }
    else{
      printf("Is NO Variable\n");

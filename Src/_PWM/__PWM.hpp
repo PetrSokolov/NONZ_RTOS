@@ -33,6 +33,11 @@ namespace src{
 	
 class Pwm{
   public:
+                 Pwm(IVariable* deathTime, IVariable* value)
+                   {
+                      _deathTime = deathTime;     //  Указатель на настроечный параметр. death time[мкс]
+                      _value     = value;         //  Указатель на настроечный параметр. Амплитуда [%]
+                   }
             void setFrequency (float frequency);
             void setBlock 		(float block);
     virtual	void setValue 		(float value) =0;
@@ -73,6 +78,7 @@ class Pwm{
 
 class Pwm2phaseNONZ : public Pwm{
 	public:
+    Pwm2phaseNONZ(IVariable* deathTime, IVariable* value) : Pwm(deathTime, value) {}
     virtual void setValue	(float value);
 		virtual void init	    (void);
 		virtual uint16_t computeDeathTime (float deathTime);

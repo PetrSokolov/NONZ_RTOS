@@ -21,19 +21,24 @@ using namespace src;
 //---------------------------------------------------------------------------------------
 void Editor::rcPlus(void)
  {
-   if(_variable->getRw() && !getModificationMode()) { setModificationMode();}
+   if(_variable->getRw() && !getModificationMode()) { setModificationMode(TRUE);}
    if(getModificationMode()) { incValueHandler(1,0); }
  }
 //---------------------------------------------------------------------------------------
 void Editor::rcMinus(void)
- { decValueHandler(1,0); }
+ {
+   if(_variable->getRw() && !getModificationMode()) { setModificationMode(TRUE);}
+   if(getModificationMode()) { decValueHandler(1,0); }
+ }
 
 
 //---------------------------------------------------------------------------------------
 void Editor::rcEnter(void)
  {
-   endEditing();
-   rcDown();
+   if( endEditing()==TRUE){
+     rcDown();
+     setModificationMode(FALSE);
+   }
  }
 
 
@@ -54,7 +59,7 @@ void Editor::rcClose(void)
 
 //---------------------------------------------------------------------------------------
 void Editor::rcDown(void)
-  { clrViewerMode(); clrModificationMode(); }
+  { setViewerMode(FALSE); setModificationMode(FALSE); }
 
 
 //---------------------------------------------------------------------------------------

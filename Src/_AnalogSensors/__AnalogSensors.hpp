@@ -12,8 +12,10 @@
 #ifndef AV_SENSORS_HPP
 #define AV_SENSORS_HPP
 #include "stdint.h"
+#include "stdio.h"
 
 #include "..\_DSP_tools\__Filters.hpp"
+#include "..\_Interfaces\__IVariable.hpp"
 
 #ifdef __cplusplus
  extern "C" {
@@ -35,15 +37,16 @@ namespace src{
 	public:
 		// Конструкторы
 		AnalogMeanSensor();
-		AnalogMeanSensor(float ts, float tf);
+		AnalogMeanSensor(float tsMean, float tfMean);
 
 		// Методы
 		inline	void  getValue				(float &v);
 		inline	float getValue				();
-						void setCalibration	(uint16_t value);
+		inline	void  setCalibration	(float value) { _calibrationValue = value; }
+		inline	float getCalibration	(void)        { return _calibrationValue; }
 
 	protected:
-		float	_calibration_value;	// Калибровочный коэффициент
+		float	_calibrationValue;	// Калибровочный коэффициент
 };
 	
 
@@ -56,19 +59,26 @@ namespace src{
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
 //	SetTsTf					- Установить период дискретизации (ts) и постоянную времени фильтра (tf). ts и tf задаются в секундах (0.0002 сек и тп)
 //	SetCalibration	- Установить калибровочный коэффициент
-	class AnalogRmsSensor : public RmsFilter {
+//	class AnalogRmsSensor : public RmsFilter {
+	class AnalogRmsSensor {
 	public:
 		// Конструкторы
 		AnalogRmsSensor();
-		AnalogRmsSensor(float ts, float tf);
+		AnalogRmsSensor(float tsMean, float tfMean, float tsRms, float tfRms, IVariable* scaleFactor, IVariable* scaleZero);
 
 		// Методы
-		inline	void  getValue				(float &v);
-		inline	float getValue				();
-						void setCalibration	(uint16_t value);
+		inline	void  putSample			 (uint16_t sample);
+		inline	void  getValue			 (float &value);
+		inline	float getValue			 ();
+		inline  void  setCalibration (float value) { _calibrationValue = value; };
+		inline	float getCalibration (void)        { return _calibrationValue; }
 
 	protected:
-		float	_calibration_value;	// Калибровочный коэффициент
+		float	_calibrationValue;	// Калибровочный коэффициент
+    MeanFilter _meanFilter;
+    RmsFilter  _rmsFilter;
+    IVariable*  _scaleFactor;
+    IVariable*  _scaleZero;
 };
 
 
@@ -79,33 +89,40 @@ namespace src{
 //-------------------------------------------------------------------------------------------------------------------
 //	AnalogRmsSensor - класс аналоговых датчиков, вычисляющих среднеквадратическое RMS значение
 //-------------------------------------------------------------------------------------------------------------------
-//	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
-inline	void AnalogRmsSensor::getValue		(float &value)
+
+inline	void  AnalogRmsSensor::putSample  (uint16_t sample)
 {
-	value = getMean() * _calibration_value;
+  _meanFilter.putSample(sample);
+  _rmsFilter.putSample(sample - _meanFilter.getMean());
+}
+
+//	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
+inline	void AnalogRmsSensor::getValue  (float &value)
+{
+	value = _rmsFilter.getMean() * _calibrationValue;
 }
 
 
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
-inline	float AnalogRmsSensor::getValue		()
+inline	float AnalogRmsSensor::getValue  ()
 {
-	return (getMean() * _calibration_value);
+  return (_rmsFilter.getMean() * _calibrationValue);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------
 //	AnalogMeanSensor - класс аналоговых датчиков, вычисляющих среднее Mean значение
 //-------------------------------------------------------------------------------------------------------------------------
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
-inline	void AnalogMeanSensor::getValue		(float &value)
+inline	void AnalogMeanSensor::getValue  (float &value)
 {
-	value = getMean() * _calibration_value;
+	value = getMean() * _calibrationValue;
 }
 
 
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
 inline	float AnalogMeanSensor::getValue		()
 {
-	return (getMean() * _calibration_value);
+	return (getMean() * _calibrationValue);
 }
 
 //-------------------------------------------------------------------------------------------------------------------

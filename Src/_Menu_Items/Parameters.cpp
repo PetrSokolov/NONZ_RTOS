@@ -14,6 +14,7 @@
 #include "..\_Objects_Definitions\__ObjectsDefinitions.hpp"
 
 
+
 using namespace src;
 using namespace std;
 
@@ -92,7 +93,7 @@ void GroupParameter::putToMenu (IMenuItem* menuItem)   // Положить в м
 //--------------------------------------------------------------------------------------------------------
 // Parameter - Конструктор с параметрами
 //--------------------------------------------------------------------------------------------------------
-Parameter::Parameter(  uint16_t   id,
+ParameterInt::ParameterInt(  uint16_t   id,
                 char*      menu,
                 char*      text,
                 uint16_t    modbusAdr,
@@ -121,7 +122,7 @@ Parameter::Parameter(  uint16_t   id,
                     }
 
 // Без записи в карты
-Parameter::Parameter(
+/*ParameterInt::ParameterInt(
                 char*      menu,
                 char*      text,
                 uint16_t    modbusAdr,
@@ -144,21 +145,21 @@ Parameter::Parameter(
                       _flags.rw    = rw;
                       _flags.access  = access;
                     }
-
+*/
 // Методы интерфейса IMenuItem  ------------------------------------------------------------------------------
-void Parameter::putToMenu (IMenuItem* menuItem)   // Положить в меню элемент (объект IMenuItem)
+void ParameterInt::putToMenu (IMenuItem* menuItem)   // Положить в меню элемент (объект IMenuItem)
 {
   menuEngine.putItem(menuItem);
 }
 
 // Методы интерфейса IMbItem1Reg  ----------------------------------------------------------------------------
-void  Parameter::putToMbMap  (IMbItem1Reg* mbItem1Reg) // Положить объект в карту (объект IMbItem1Reg)
+void  ParameterInt::putToMbMap  (IMbItem1Reg* mbItem1Reg) // Положить объект в карту (объект IMbItem1Reg)
 {
   // Контейнер будет в MbEngine
 }
 
 // Методы интерфейса IVariable  ----------------------------------------------------------------------------
-void  Parameter::putToVarMap  (IVariable* variable)  // Положить в карту элемент (объект IVariable)
+void  ParameterInt::putToVarMap  (IVariable* variable)  // Положить в карту элемент (объект IVariable)
 {
  containerOfVariables.putContent(variable);
 }
@@ -176,23 +177,27 @@ ParameterFlt::ParameterFlt(  uint16_t   id,
                 uint16_t   rw,
                 int16_t    min,
                 int16_t    max,
-                uint16_t   user,
+                uint16_t   access,
                 uint16_t   def,
                 int16_t    power
-                ):
-    Parameter(     id,
-                   menu,
-                   text,
-                   modbusAdr,
-                   value,
-                   rw,
-                   min,
-                   max,
-                   user,
-                   def
                 )
-                { _flags.type = TYPE_FLOAT;
+                {
+                  _id          = id;
+                  _menu        = menu;
+                  _text        = text;
+                  _modbusAdr   = modbusAdr;
+                  _value       = value;
+                  _min         = min;
+                  _max         = max;
+                  _def         = def;
+
+                  _flags.rw    = rw;
+                  _flags.access  = access;
+                  _flags.type = TYPE_FLOAT;
                   _power = power;
+                  putToMenu(this);
+                  putToMbMap(this);
+                  putToVarMap(this);
                 }
 
 //--------------------------------------------------------------------------------------------------------
@@ -206,27 +211,44 @@ ParameterFlt::ParameterFlt(
                 uint16_t   rw,
                 int16_t    min,
                 int16_t    max,
-                uint16_t   user,
+                uint16_t   access,
                 uint16_t   def,
                 int16_t    power
-                ):
-    Parameter(     
-                   menu,
-                   text,
-                   modbusAdr,
-                   value,
-                   rw,
-                   min,
-                   max,
-                   user,
-                   def
                 )
-                { _flags.type = TYPE_FLOAT;
+                {
+                  _menu        = menu;
+                  _text        = text;
+                  _modbusAdr   = modbusAdr;
+                  _value       = value;
+                  _min         = min;
+                  _max         = max;
+                  _def         = def;
+
+                  _flags.rw    = rw;
+                  _flags.access  = access;
+                  _flags.type = TYPE_FLOAT;
                   _power = power;
                 }
 
 
-				
+// Методы интерфейса IMenuItem  ------------------------------------------------------------------------------
+void ParameterFlt::putToMenu (IMenuItem* menuItem)   // Положить в меню элемент (объект IMenuItem)
+{
+  menuEngine.putItem(menuItem);
+}
+
+// Методы интерфейса IMbItem1Reg  ----------------------------------------------------------------------------
+void  ParameterFlt::putToMbMap  (IMbItem1Reg* mbItem1Reg) // Положить объект в карту (объект IMbItem1Reg)
+{
+  // Контейнер будет в MbEngine
+}
+
+// Методы интерфейса IVariable  ----------------------------------------------------------------------------
+void  ParameterFlt::putToVarMap  (IVariable* variable)  // Положить в карту элемент (объект IVariable)
+{
+ containerOfVariables.putContent(variable);
+}
+
 //========================================================================================================
 //                                        Декоратор класса DecoratorCalibrated
 //  Изменяет поведение объекта под Функция калибровки по записи "1"
@@ -234,7 +256,7 @@ ParameterFlt::ParameterFlt(
  
   // Конструктор с параметрами
 // DecoratorCalibrated::DecoratorCalibrated ( ParameterFlt* parameterFlt )
-DecoratorCalibrated::DecoratorCalibrated (/* ParameterFlt* parameterFlt,*/
+DecoratorFltCalibrated::DecoratorFltCalibrated (/* ParameterFlt* parameterFlt,*/
                 uint16_t   id,
                 char*      menu,
                 char*      text,
@@ -248,7 +270,7 @@ DecoratorCalibrated::DecoratorCalibrated (/* ParameterFlt* parameterFlt,*/
                 int16_t    power)
   {
 
-    _parameterFlt = new ParameterFlt ( menu,
+    _parameter = new ParameterFlt ( menu,
                                 text,
                                 modbusAdr,
                                 value,
@@ -265,3 +287,46 @@ DecoratorCalibrated::DecoratorCalibrated (/* ParameterFlt* parameterFlt,*/
     putToVarMap(this);
   }
 
+  
+
+//  Определение метода интерфейса IVariable
+Bool DecoratorFltCalibrated::setValue (int32_t value)
+{
+  switch(value){
+    case 0:{
+      setCalibratingState(FALSE);
+//      _calibratingValue = _autocalibratingValue;
+      _parameter->setValue(_autocalibratingValue);
+      return TRUE;
+    }break;
+    case 1:{
+      printf("Enter in Cal. Mode\n");
+//      _autocalibratingValue = getValueFlt();
+      setCalibratingState(TRUE);
+      return FALSE;
+    }break;
+    default:{
+//      _calibratingValue = (float)value / pow(10.0, (int)_parameter->getPower());
+      _parameter->setValue(value);
+      return TRUE;
+    }break;
+  }
+}
+    
+// Методы интерфейса IMenuItem  ------------------------------------------------------------------------------
+void DecoratorFltCalibrated::putToMenu (IMenuItem* menuItem)   // Положить в меню элемент (объект IMenuItem)
+{
+  menuEngine.putItem(menuItem);
+}
+
+// Методы интерфейса IMbItem1Reg  ----------------------------------------------------------------------------
+void  DecoratorFltCalibrated::putToMbMap  (IMbItem1Reg* mbItem1Reg) // Положить объект в карту (объект IMbItem1Reg)
+{
+  // Контейнер будет в MbEngine
+}
+
+// Методы интерфейса IVariable  ----------------------------------------------------------------------------
+void  DecoratorFltCalibrated::putToVarMap  (IVariable* variable)  // Положить в карту элемент (объект IVariable)
+{
+ containerOfVariables.putContent(variable);
+}

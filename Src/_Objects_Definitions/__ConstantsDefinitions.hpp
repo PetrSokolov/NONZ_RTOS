@@ -24,6 +24,10 @@
 
 namespace src{
 
+/// Определение логических значений
+enum Bool    {FALSE,
+              TRUE };
+
 /// Набор возможных режимов работы SPI
 enum SpiMode { SPI_MODE_0,  ///<  режим 0 (CPOL = 0, CPHA = 0)
                SPI_MODE_1,  ///<  режим 1 (CPOL = 0, CPHA = 1)

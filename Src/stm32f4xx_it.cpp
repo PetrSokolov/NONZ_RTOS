@@ -222,11 +222,11 @@ void DMA2_Stream4_IRQHandler(void)
 
   rc.rcDecoder.timerHandler(60);
 
-//  uDcSensor.putSample(adc3.getBufer()[0]);
-//  uDcSensor.putSample(adc3.getBufer()[1]);
-//  uDcSensor.putSample(adc3.getBufer()[2]);
+  uDcSensor.putSample(adc3.getBufer()[0]);
+  uDcSensor.putSample(adc3.getBufer()[1]);
+  uDcSensor.putSample(adc3.getBufer()[2]);
   uChargeSensor.putSample(adc1.getBufer()[0]);
-//  iChargeSensor.putSample(adc1.getBufer()[1]);
+  iChargeSensor.putSample(adc1.getBufer()[1]);
   
   messageQPicDelayEvt = osMessageGet(spi2Handler.retMessageQPicDelay(), 0);
   if (messageQPicDelayEvt.status == osEventMessage){

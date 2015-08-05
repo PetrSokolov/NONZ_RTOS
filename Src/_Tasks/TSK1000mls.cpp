@@ -21,6 +21,10 @@
 char transferChars[200];  // Возможно превышает кучу, сваливалось в хардфаулт
 uint16_t timeCharge=0, size;
 
+//int16_t numbers=0, pages=0, p1=0, p2=0, p3=0;
+//char names[20];
+float pwmval =0;
+
 void StartTask1000mls(void const * argument)
 {
 
@@ -29,18 +33,33 @@ void StartTask1000mls(void const * argument)
 //  float valueCharge = 1.234;
 // uint8_t bmsNr;
 // Bms* bms;
-
+  
+  
   for(;;)
   {
     
     osSemaphoreWait(binarySemTSK1000mls, osWaitForever);
     
+    //pwmval += 0.01;
+    pwmval =0.5;
+    if (pwmval>0.8) {pwmval = 0.1;}
+    pwm.setValue(pwmval);
+    printf("1000mls\n");
 //    printf("Size of variables %d\n", containerOfVariables.getCountOfContents());
 //    printf("id 202 =  %d\n", containerOfVariables.getContent(202)->getValue());
 
     //ITMLOG 1 >D:\BMS3_2A.csv   
+/*    p3 = (numbers-6-90*2)/3;       if (p3<0) p3=0;
+    p2 = (numbers - p3*3 - 6)/2;   if (p2<0) p2=0;
+    p1 = (numbers - p3*3 - p2*2);
+
+    printf("numbers of Digits = %d,\n", numbers);
+    printf("p1 = %d, p2 = %d, p3 = %d\n", p1, p2, p3);
+    printf("Totel Pages = %d\n\n", 3+p1+p2+p3);
+*/    
 /*   timeCharge++;
-   
+      
+    
    for (bmsNr =0; bmsNr<11; bmsNr++){
      switch(bmsNr){
        case 0:  {bms = &bms0;}break;

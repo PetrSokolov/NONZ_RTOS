@@ -15,23 +15,24 @@ namespace src{
 
 
 //======================================================================================================================== 
-// Class AnalogRmsSensor
+// Class AnalogDcRmsSensor
 //======================================================================================================================== 
  
 // Конструктор без параметров. Устанавливаются значения по умолчанию ts = 200mks, tf = 0.1sec
-AnalogRmsSensor::AnalogRmsSensor()
+/*AnalogDcRmsSensor::AnalogDcRmsSensor()
  {
-	_meanFilter.putTsTf	(0.0002, 0.5);
+//	_meanFilter.putTsTf	(0.0002, 0.5);
 	_rmsFilter.putTsTf	(0.0002, 0.1);
  }
-
+*/
 
 // Конструктор с параметрами
-AnalogRmsSensor::AnalogRmsSensor (float tsMean, float tfMean, float tsRms, float tfRms, IVariable* scaleFactor, IVariable* scaleZero)
+AnalogDcRmsSensor::AnalogDcRmsSensor (float tsRms, float tfRms, IVariable* codeUcal, IVariable* codeZero, IVariable* uCal)
 {
-	_scaleFactor = scaleFactor;
-  _scaleZero   = scaleZero;
-  _meanFilter.putTsTf		(tsMean, tfMean);
+	_codeUcal   = codeUcal;
+  _codeZero  = codeZero;
+  _uCal       = uCal;
+//  _meanFilter.putTsTf		(tsMean, tfMean);
 	_rmsFilter.putTsTf		(tsRms, tfRms);
 }
 

@@ -50,6 +50,7 @@ class MeanFilter
 
 //======================================================================================================================== 
 // RMS Mean - Фильтр второго порядка
+// Измеряет значение с постоянкой. Для синусоидального сигнала сделать отдельный класс.
 //======================================================================================================================== 
 //	Методы:
 //	PutSample - Положить в фильтр отсчет АЦП и обработать. Аргумент adc_sample - значение АЦП. Выполняется каждый период дискретизации
@@ -72,7 +73,7 @@ class RmsFilter : public MeanFilter
 //-------------------------------------------------------------------------------------------------------------------
 inline void MeanFilter::putSample		(uint16_t adc_sample)
 {
-	_mean_y_1 = _mean_y_1 + ((float)adc_sample		- _mean_y_1)*_tfm;
+	_mean_y_1 = _mean_y_1 + ((float)adc_sample - _mean_y_1)*_tfm;
 	_mean_z_1 = _mean_z_1 + (_mean_y_1 - _mean_z_1)*_tfm;
 	_mean_value = _mean_z_1;
 }
@@ -99,7 +100,7 @@ inline	float MeanFilter::getMean		(void)
 //-------------------------------------------------------------------------------------------------------------------
 inline void RmsFilter::putSample		(uint16_t adc_sample)
 {
-	_mean_y_1 = _mean_y_1 + ((float)adc_sample * adc_sample	- _mean_y_1)*_tfm;
+	_mean_y_1 = _mean_y_1 + ((float)adc_sample * adc_sample - _mean_y_1)*_tfm;
 	_mean_z_1 = _mean_z_1 + (_mean_y_1 - _mean_z_1)*_tfm;
 	_mean_value = sqrt( _mean_z_1 );
 }

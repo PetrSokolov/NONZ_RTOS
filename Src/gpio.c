@@ -87,7 +87,7 @@ void MX_GPIO_Init(void)
                           |GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_12|GPIO_PIN_13;
   
 
-  /*Configure GPIO pins : PC13 PC14 PC6 PC7 
+  /*Configure GPIO pins : PC13 PC14 PC6 PC7
                            PC8 PC9 PC10 */
   GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_6|GPIO_PIN_7 
                           |GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10;
@@ -95,6 +95,7 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  GPIOC->BSRR = GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9;
 
   /*Configure GPIO pins : PC15 PC11 PC12 */
   GPIO_InitStruct.Pin = GPIO_PIN_15|GPIO_PIN_11|GPIO_PIN_12;

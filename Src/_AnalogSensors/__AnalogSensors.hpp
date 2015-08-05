@@ -51,7 +51,7 @@ namespace src{
 	
 
 //-------------------------------------------------------------------------------------------------------------------------
-//	AnalogRmsSensor - класс аналоговых датчиков, вычисляющих среднеквадратическое RMS значение
+//	AnalogDсRmsSensor - класс аналоговых датчиков, вычисляющих среднеквадратическое DC RMS значение
 //-------------------------------------------------------------------------------------------------------------------------
 //	Методы:
 //	PutSample				- Положить в фильтр отсчет АЦП и обработать. Аргумент adc_sample - значение АЦП. Выполняется каждый период дискретизации
@@ -60,25 +60,26 @@ namespace src{
 //	SetTsTf					- Установить период дискретизации (ts) и постоянную времени фильтра (tf). ts и tf задаются в секундах (0.0002 сек и тп)
 //	SetCalibration	- Установить калибровочный коэффициент
 //	class AnalogRmsSensor : public RmsFilter {
-	class AnalogRmsSensor {
+	class AnalogDcRmsSensor {
 	public:
 		// Конструкторы
-		AnalogRmsSensor();
-		AnalogRmsSensor(float tsMean, float tfMean, float tsRms, float tfRms, IVariable* scaleFactor, IVariable* scaleZero);
+//		AnalogDcRmsSensor();
+		AnalogDcRmsSensor(float tsRms, float tfRms, IVariable* _codeUcal, IVariable* _codeZero, IVariable* _uCal);
 
 		// Методы
 		inline	void  putSample			 (uint16_t sample);
 		inline	void  getValue			 (float &value);
-		inline	float getValue			 ();
+		inline	float getValue			 (void);
 		inline  void  setCalibration (float value) { _calibrationValue = value; };
 		inline	float getCalibration (void)        { return _calibrationValue; }
 
 	protected:
 		float	_calibrationValue;	// Калибровочный коэффициент
-    MeanFilter _meanFilter;
+//    MeanFilter _meanFilter;
     RmsFilter  _rmsFilter;
-    IVariable*  _scaleFactor;
-    IVariable*  _scaleZero;
+    IVariable*  _codeUcal;    // Код, соответствующий калибровочному напряжению
+    IVariable*  _codeZero;    // Код нуля
+    IVariable*  _uCal;        // Напряжение калибровки
 };
 
 
@@ -87,24 +88,23 @@ namespace src{
 //======================================================================================================================== 
 
 //-------------------------------------------------------------------------------------------------------------------
-//	AnalogRmsSensor - класс аналоговых датчиков, вычисляющих среднеквадратическое RMS значение
+//	AnalogDcRmsSensor - класс аналоговых датчиков, вычисляющих среднеквадратическое RMS значение
 //-------------------------------------------------------------------------------------------------------------------
 
-inline	void  AnalogRmsSensor::putSample  (uint16_t sample)
+inline	void  AnalogDcRmsSensor::putSample  (uint16_t sample)
 {
-  _meanFilter.putSample(sample);
-  _rmsFilter.putSample(sample - _meanFilter.getMean());
+  _rmsFilter.putSample(sample);
 }
 
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
-inline	void AnalogRmsSensor::getValue  (float &value)
+inline	void AnalogDcRmsSensor::getValue  (float &value)
 {
 	value = _rmsFilter.getMean() * _calibrationValue;
 }
 
 
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
-inline	float AnalogRmsSensor::getValue  ()
+inline	float AnalogDcRmsSensor::getValue  ()
 {
   return (_rmsFilter.getMean() * _calibrationValue);
 }

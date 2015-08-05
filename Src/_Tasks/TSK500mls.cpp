@@ -57,13 +57,13 @@ void StartTask500mls(void const * argument)
 
     //  Окончание самодиагностики BMS
 
-  uDcBusCalibrationCoeff.setValue((float)10);
-  uChargeCalibrationCoeff.setValue((float)10);
-  iChargeCalibrationCoeff.setValue((float)10);
+  vUDcBusCodeUCal.setValue((float)10);
+  vUChargeCodeUCal.setValue((float)10);
+  vIChargeCodeUCal.setValue((float)10);
   
-  uDcSensor.setCalibration( uDcBusCalibrationCoeff.getValueFlt() );
-  uChargeSensor.setCalibration( uChargeCalibrationCoeff.getValueFlt() );
-  iChargeSensor.setCalibration( iChargeCalibrationCoeff.getValueFlt() );
+  uDcSensor.setCalibration( vUDcBusCodeUCal.getValueFlt() );
+  uChargeSensor.setCalibration( vUChargeCodeUCal.getValueFlt() );
+  iChargeSensor.setCalibration( vIChargeCodeUCal.getValueFlt() );
 
 
   for(;;)
@@ -79,47 +79,47 @@ void StartTask500mls(void const * argument)
     bmsAssembly.readFlagRegisters();
     bmsAssembly.startCellVoltageMeasurement();
     
-//    uDcBusCalibrationCoeff.setValue((float)10);
+//    vUDcBusCodeUCal.setValue((float)10);
     
-//    uDcSensor.setCalibration( uDcBusCalibrationCoeff.getValueFlt() );
+//    uDcSensor.setCalibration( vUDcBusCodeUCal.getValueFlt() );
 //    printf ("uDcValue = %f\n", uDcSensor.getValue());
     uDcBus.setValue( uDcSensor.getValue() );
 //    printf("DC Bus Voltage = %f\n", uDcBus.getValueFlt());
-//    printf ("CalValue(int) =%d, (float) =%f\n", uDcBusCalibrationCoeff.getValue(), uDcBusCalibrationCoeff.getValueFlt());
-//    printf ("CalValue(int) =%d, (float) =%f\n", uDcBusCalibrationCoeff.getValue(), uDcBusCalibrationCoeff.getValueFlt());
+//    printf ("CalValue(int) =%d, (float) =%f\n", vUDcBusCodeUCal.getValue(), vUDcBusCodeUCal.getValueFlt());
+//    printf ("CalValue(int) =%d, (float) =%f\n", vUDcBusCodeUCal.getValue(), vUDcBusCodeUCal.getValueFlt());
 
-    if (uDcBusCalibrationCoeff.getCalibratingState()==TRUE){
+    if (vUDcBusCodeUCal.getCalibratingState()==TRUE){
       printf("U DC Bus AutoCal K = %f\n", uDcSensor.getCalibration());
-      printf("CalVoltage    = %d\n", uDcBusCalibratingVoltage.getValue());
+      printf("CalVoltage    = %d\n", vUCalibrating.getValue());
       printf("SensorVoltage = %f\n", uDcSensor.getValue());
-      printf("Cal Err (int)   = %d\n", uDcBusCalibrationCoeff.getValue());
-      printf("Cal Err (float) = %f\n", uDcBusCalibrationCoeff.getValueFlt());
+      printf("Cal Err (int)   = %d\n", vUDcBusCodeUCal.getValue());
+      printf("Cal Err (float) = %f\n", vUDcBusCodeUCal.getValueFlt());
 
-      float error_ = uDcBusCalibratingVoltage.getValue()/uDcSensor.getValue();
+      float error_ = vUCalibrating.getValue()/uDcSensor.getValue();
       if (error_ < 0.1) {error_ = 0.1;}
       if (error_ > 2)   {error_ = 2;}
 
-//      uDcBusCalibrationCoeff.setCalibrationError( 1 - (uDcBusCalibratingVoltage.getValue()/uDcSensor.getValue() ) );
-      uDcBusCalibrationCoeff.setCalibrationError( 1 - error_ );
-      uDcSensor.setCalibration( uDcSensor.getCalibration() * (1 - uDcBusCalibrationCoeff.getCalibrationError() ) );
-      uDcBusCalibrationCoeff.setAutocalibratingValue(uDcSensor.getCalibration());
+//      vUDcBusCodeUCal.setCalibrationError( 1 - (vUCalibrating.getValue()/uDcSensor.getValue() ) );
+      vUDcBusCodeUCal.setCalibrationError( 1 - error_ );
+      uDcSensor.setCalibration( uDcSensor.getCalibration() * (1 - vUDcBusCodeUCal.getCalibrationError() ) );
+      vUDcBusCodeUCal.setAutocalibratingValue(uDcSensor.getCalibration());
     }
 
-    if (uChargeCalibrationCoeff.getCalibratingState()==TRUE){
+    if (vUChargeCodeUCal.getCalibratingState()==TRUE){
       printf("uCharge AutoCal K = %f\n", uChargeSensor.getCalibration());
-      printf("CalVoltage    = %d\n", uDcBusCalibratingVoltage.getValue());
+      printf("CalVoltage    = %d\n", vUCalibrating.getValue());
       printf("SensorVoltage = %f\n", uChargeSensor.getValue());
-      printf("Cal Err (int)   = %d\n", uChargeCalibrationCoeff.getValue());
-      printf("Cal Err (float) = %f\n", uChargeCalibrationCoeff.getValueFlt());
+      printf("Cal Err (int)   = %d\n", vUChargeCodeUCal.getValue());
+      printf("Cal Err (float) = %f\n", vUChargeCodeUCal.getValueFlt());
       
-      float error_ = uDcBusCalibratingVoltage.getValue()/uDcSensor.getValue();
+      float error_ = vUCalibrating.getValue()/uDcSensor.getValue();
       if (error_ < 0.1) {error_ = 0.1;}
       if (error_ > 2)   {error_ = 2;}
 
-//      uChargeCalibrationCoeff.setCalibrationError( 1 - (uDcBusCalibratingVoltage.getValue()/ uChargeSensor.getValue() ) );
-      uChargeCalibrationCoeff.setCalibrationError( 1 - error_ );
-      uChargeSensor.setCalibration( uChargeSensor.getCalibration() * (1 - uChargeCalibrationCoeff.getCalibrationError() ) );
-      uChargeCalibrationCoeff.setAutocalibratingValue(uChargeSensor.getCalibration());
+//      vUChargeCodeUCal.setCalibrationError( 1 - (vUCalibrating.getValue()/ uChargeSensor.getValue() ) );
+      vUChargeCodeUCal.setCalibrationError( 1 - error_ );
+      uChargeSensor.setCalibration( uChargeSensor.getCalibration() * (1 - vUChargeCodeUCal.getCalibrationError() ) );
+      vUChargeCodeUCal.setAutocalibratingValue(uChargeSensor.getCalibration());
     }
     
 //    bms0.dischargeControl(0xAA);

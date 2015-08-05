@@ -35,7 +35,7 @@ using namespace src;
 void Pwm2phaseNONZ::setValue (float value)
 {
 	_channel1Pulse = (uint16_t) (value * (_timerPeriod - 1));
-	_channel2Pulse = (uint16_t) (value * (_timerPeriod - 1));
+	_channel2Pulse = (uint16_t) ((1-value) * (_timerPeriod - 1));
   *_compare1 = _channel1Pulse;
   *_compare2 = _channel2Pulse;
 }

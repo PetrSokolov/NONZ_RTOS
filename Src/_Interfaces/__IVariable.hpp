@@ -26,7 +26,7 @@ namespace src{
 class IVariable{
   public:
                    void     putToVarMap (IVariable* variable); // Положить в карту элемент (объект IVariable)
-
+    virtual inline void     endOfCervice(void)=0;           // Вызывается по выходу из редактирования (сделано для декораторов - отключение всего при выходе)
     // Методы, возвращающие значение параметра
     virtual inline int32_t  getValue   (void) =0;            // Возвращает значение параметра
     virtual inline float    getValueFlt(void) =0;            // Возвращает значение параметра в формате float

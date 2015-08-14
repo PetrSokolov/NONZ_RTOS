@@ -18,14 +18,6 @@ namespace src{
 // Class AnalogDcRmsSensor
 //======================================================================================================================== 
  
-// Конструктор без параметров. Устанавливаются значения по умолчанию ts = 200mks, tf = 0.1sec
-/*AnalogDcRmsSensor::AnalogDcRmsSensor()
- {
-//	_meanFilter.putTsTf	(0.0002, 0.5);
-	_rmsFilter.putTsTf	(0.0002, 0.1);
- }
-*/
-
 // Конструктор с параметрами
 AnalogDcRmsSensor::AnalogDcRmsSensor (float tsRms, float tfRms, IVariable* codeUcal, IVariable* codeZero, IVariable* uCal)
 {
@@ -35,13 +27,6 @@ AnalogDcRmsSensor::AnalogDcRmsSensor (float tsRms, float tfRms, IVariable* codeU
 //  _meanFilter.putTsTf		(tsMean, tfMean);
 	_rmsFilter.putTsTf		(tsRms, tfRms);
 }
-
-// Установить калибровочный коэффициент
-/*void AnalogRmsSensor::setCalibration	(uint16_t value)
-{
-	_calibration_value = (float)value;
-	_calibration_value *= (float)0.0001;
-}*/
 
 //======================================================================================================================== 
 // Class AnalogMeanSensor
@@ -60,12 +45,6 @@ AnalogMeanSensor::AnalogMeanSensor (float tsMean, float tfMean)// : AnalogSensor
 	putTsTf		(tsMean, tfMean);
 }
 
-// Установить калибровочный коэффициент
-/*void AnalogMeanSensor::setCalibration	(uint16_t value)
-{
-	_calibration_value = (float)value;
-	_calibration_value *= (float)0.0001;
-}*/
 
 }
 

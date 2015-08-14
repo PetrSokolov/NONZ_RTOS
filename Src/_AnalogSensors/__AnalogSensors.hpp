@@ -70,12 +70,12 @@ namespace src{
 		inline	void  putSample			 (uint16_t sample);
 		inline	void  getValue			 (float &value);
 		inline	float getValue			 (void);
-		inline  void  setCalibration (float value) { _calibrationValue = value; };
-		inline	float getCalibration (void)        { return _calibrationValue; }
+		inline	float getMean 			 (void)        { return _rmsFilter.getMean(); }
+//		inline  void  setCalibration (float value) { _calibrationValue = value; };
+//		inline	float getCalibration (void)        { return _calibrationValue; }
 
 	protected:
-		float	_calibrationValue;	// Калибровочный коэффициент
-//    MeanFilter _meanFilter;
+//		float	_calibrationValue;	// Калибровочный коэффициент
     RmsFilter  _rmsFilter;
     IVariable*  _codeUcal;    // Код, соответствующий калибровочному напряжению
     IVariable*  _codeZero;    // Код нуля
@@ -99,14 +99,18 @@ inline	void  AnalogDcRmsSensor::putSample  (uint16_t sample)
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
 inline	void AnalogDcRmsSensor::getValue  (float &value)
 {
-	value = _rmsFilter.getMean() * _calibrationValue;
+	value = ((_rmsFilter.getMean() - _codeZero->getValueFlt())*_uCal->getValueFlt())/_codeUcal->getValueFlt();
 }
 
 
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
 inline	float AnalogDcRmsSensor::getValue  ()
 {
-  return (_rmsFilter.getMean() * _calibrationValue);
+  printf("mean      = %f\n", _rmsFilter.getMean());
+  printf("code zero = %f\n", _codeZero->getValueFlt());
+  printf("uCal      = %f\n", _uCal->getValueFlt());
+  printf("code uCal = %f\n\n", _codeUcal->getValueFlt());
+  return ((_rmsFilter.getMean() - _codeZero->getValueFlt())*_uCal->getValueFlt())/_codeUcal->getValueFlt();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------

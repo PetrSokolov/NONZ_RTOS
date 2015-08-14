@@ -32,7 +32,7 @@ using namespace src;
   extern Pwm2phaseNONZ pwm;
 
    //  Датчик напряжения на шине постоянного тока. Напряжение  и ток на заряжаемой батарее
-  extern AnalogDcRmsSensor uDcSensor, uChargeSensor, iChargeSensor;
+  extern AnalogDcRmsSensor uDcBusSensor, uChargeSensor, iChargeSensor;
 
   //  Обработчик отображения на индикаторе. Реализует интерфейс IDisplay
   extern DisplayLed4Digit displayLed4Digit;
@@ -67,7 +67,9 @@ using namespace src;
   extern ParameterFlt  pwmDeathTime, pwmValue;
 
   // Напряжение на шине постоянного тока
-  extern ParameterFlt uDcBus;
+  extern ParameterFlt vUDcBus;
+  extern ParameterFlt vUCharge;
+  extern ParameterFlt vICharge;
 
   // Напряжение и ток калибровки
   extern ParameterInt vUCalibrating;
@@ -79,7 +81,7 @@ using namespace src;
 
   // Калибровочный коэффициент датчика напряжения и тока заряда
   extern DecoratorFltCalibrated vUChargeCodeUCal;
-  extern DecoratorFltCalibrated vIChargeCodeUCal;
+  extern DecoratorFltCalibrated vIChargeCodeICal;
   extern DecoratorFltCalibrated vUChargeCodeZero;
   extern DecoratorFltCalibrated vIChargeCodeZero;
    

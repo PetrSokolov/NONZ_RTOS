@@ -72,7 +72,8 @@ void LedDecoder::decode (char symbol)
     case '8': {_segments.all = 0x7F; } break;
     case '9': {_segments.all = 0x6F; } break;
     case '.': {_segments.seg.dp = 1; } break;
-    default:  {_segments.all = 0x40; } break;
+    case '-': {_segments.all = 0x40; } break;
+    default:  {_segments.all = 0x00; } break;
     }
    
    }

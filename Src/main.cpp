@@ -102,7 +102,7 @@ int main(void)
   
   // Настройка deathTime
   pwm.init();
-/* bugfix */   pwmDeathTime.setValue(20);
+/* bugfix */   pwmDeathTime.setValue(10);
   htim1.Instance->BDTR &= ~TIM_BDTR_DTG;
   htim1.Instance->BDTR |= pwm.computeDeathTime(pwmDeathTime.getValueFlt());
   

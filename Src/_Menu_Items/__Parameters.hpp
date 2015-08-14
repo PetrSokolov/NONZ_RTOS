@@ -132,6 +132,7 @@ class ParameterInt : public IMenuItem, public IMbItem1Reg, public IVariable {
   //----------------------------------------------------------------------------------------------------------
   // Методы интерфейса IVariable  ----------------------------------------------------------------------------
                     void     putToVarMap  (IVariable* variable);                  // Положить в карту элемент (объект IVariable)
+     virtual inline void     endOfCervice(void)          { }
     // Методы, возвращающие значение параметра
      virtual inline int32_t  getValue   (void)           { return _value; }       // Возвращает значение параметра
      virtual inline float    getValueFlt(void)           { return (float)_value; }// Возвращает значение параметра
@@ -224,6 +225,7 @@ class ParameterFlt : public IMenuItem, public IMbItem1Reg, public IVariable{
   //----------------------------------------------------------------------------------------------------------
   // Методы интерфейса IVariable  ----------------------------------------------------------------------------
                     void     putToVarMap  (IVariable* variable);              // Положить в карту элемент (объект IVariable)
+     virtual inline void     endOfCervice(void)          { }
     // Методы, возвращающие значение параметра
     virtual inline int32_t  getValue    (void)          { return _value; }   // Возвращает значение параметра
     virtual inline float    getValueFlt (void)          { return _valueFlt; }// Возвращает значение параметра.
@@ -339,9 +341,10 @@ class DecoratorFltCalibrated : public IMenuItem, public IMbItem1Reg, public IVar
     //----------------------------------------------------------------------------------------------------------
     // Методы интерфейса IVariable  ----------------------------------------------------------------------------
                     void     putToVarMap  (IVariable* variable);              // Положить в карту элемент (объект IVariable)
+     virtual inline void     endOfCervice(void)          { setCalibratingState(FALSE); }
     // Методы, возвращающие значение параметра
-     virtual inline int32_t  getValue    (void)          { if(_calibratingState==TRUE) { return _calibrationError / pow(10.0, (int)_parameter->getPower());} else { return _parameter->getValue(); }  }   // Возвращает значение параметра
-     virtual inline float    getValueFlt (void)          { if(_calibratingState==TRUE) { return _calibrationError;} else { return _parameter->getValueFlt(); } } // Возвращает значение параметра.
+     virtual inline int32_t  getValue    (void)          { if(_calibratingState==TRUE) { return _autocalibratingValue / pow(10.0, (int)_parameter->getPower());} else { return _parameter->getValue(); }  }   // Возвращает значение параметра
+     virtual inline float    getValueFlt (void)          { if(_calibratingState==TRUE) { return _autocalibratingValue;} else { return _parameter->getValueFlt(); } } // Возвращает значение параметра.
      virtual        Bool     setValue    (int32_t value);                              // Обработчик ввода значения. Определяется в .cpp файле
     // Методы, возвращающие атрибуты
      virtual inline int32_t  getMin    (void) { return _parameter->getMin(); }         // Возвращает минимальное значение параметра

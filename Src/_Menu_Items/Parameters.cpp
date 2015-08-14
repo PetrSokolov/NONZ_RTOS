@@ -293,12 +293,12 @@ DecoratorFltCalibrated::DecoratorFltCalibrated (/* ParameterFlt* parameterFlt,*/
 Bool DecoratorFltCalibrated::setValue (int32_t value)
 {
   switch(value){
-    case 0:{
-      setCalibratingState(FALSE);
+//    case 0:{
+//      setCalibratingState(FALSE);
 //      _calibratingValue = _autocalibratingValue;
-      _parameter->setValue(_autocalibratingValue);
-      return TRUE;
-    }break;
+//      _parameter->setValue(_autocalibratingValue);
+//      return TRUE;
+//    }break;
     case 1:{
       printf("Enter in Cal. Mode\n");
 //      _autocalibratingValue = getValueFlt();
@@ -307,6 +307,7 @@ Bool DecoratorFltCalibrated::setValue (int32_t value)
     }break;
     default:{
 //      _calibratingValue = (float)value / pow(10.0, (int)_parameter->getPower());
+      setCalibratingState(FALSE);
       _parameter->setValue(value);
       return TRUE;
     }break;

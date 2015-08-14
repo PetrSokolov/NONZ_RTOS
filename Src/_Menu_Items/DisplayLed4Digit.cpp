@@ -47,11 +47,11 @@ void DisplayLed4Digit::display (void)
 
   //  Перезагрузка буфера на отображение (_displayString) производится в начале отображения
   if (_digit == 0){
-   //  Отображение первого объекта 
+   //  Отображение первого объекта (цифры)
    _object1->getString(_string, 0);
    _displayString = _string;
     
-   //  Отображение второго объекта 
+    //  Отображение второго объекта (светодиоды)
    _leds =0;
    _object2->getString(_string, 0);
    if (_string.size()){ //  Режим Remote
@@ -63,13 +63,7 @@ void DisplayLed4Digit::display (void)
      _leds |= BIT_1;
    }
 
-//   _displayString += leds_;
-   
    _it = _displayString.begin();
-    
-    //    strcpy(_displayBufer, _string);
-//    _symbolPointer = _displayBufer;                       // Указатель на отображаемый символ
-//    _endPointer = _symbolPointer + strlen(_displayBufer);  // Указатель на конец строки
   }
 
   //  По достижении конца строки символы гасятся
@@ -87,7 +81,6 @@ void DisplayLed4Digit::display (void)
     _ledDecoder.decode(_leds);
   }
 
-//  _ledDecoder.decode(_string[_digit]);
   switch(_digit){
     case 0:{
              GPIOD->BSRR = _ledDecoder.getAll();

@@ -49,11 +49,14 @@ class Editor : public IControlCommands, public IDisplayed{
 
   // Методы, используемые при работе с объектом IVariable
     inline void setVariable    (IVariable* variable) { _variable = variable; startEditing(); }
-    inline void startEditing   (void)                { editingValue = _variable->getValue(); }       // Начало редактирования параметра
-    inline Bool endEditing     (void)                { if (getModificationMode()==TRUE) {return _variable->setValue( editingValue );} else {return _variable->setValue( _variable->getValue() );} }       // Завершение редактирования параметра. С последующей командой на сохранение.
+    inline void startEditing   (void)                { editingValue = _variable->getValue(); _power =0; }       // Начало редактирования параметра
+    inline Bool endEditing     (void) 
+               { if (getModificationMode()==TRUE) { return _variable->setValue( editingValue );
+                 } else { return _variable->setValue( _variable->getValue() ); } 
+               }       // Завершение редактирования параметра. С последующей командой на сохранение.
     inline void exitEditing    (void) {}                                                             // Выход из редактирования параметра (без сохранения результата)
-           void incValueHandler(uint16_t x, uint8_t power);                                          // Инкремент параметра
-           void decValueHandler(uint16_t x, uint8_t power);                                          // Декремент параметра
+           void incValueHandler(uint16_t x, int power);                                          // Инкремент параметра
+           void decValueHandler(uint16_t x, int power);                                          // Декремент параметра
            void enterHandler  (void);                                                                // Обработчик ввода при редактировании параметра
     inline int32_t getEditingValue(void) { return editingValue; }                                    // Возвращает значение, обрабатываемое редактором
 
@@ -67,8 +70,9 @@ class Editor : public IControlCommands, public IDisplayed{
 
   private:
     IVariable*  _variable;            // Редактируемый объект
-    Bool        _viewerMode;       // Режим просмотра значения (1-включени/0-отключен)
+    Bool        _viewerMode;          // Режим просмотра значения (1-включени/0-отключен)
     Bool        _modificationMode;    // Режим изменения значения (TRUE-включен/FALSE-отключен)
+    int         _power;               // Степень инкремента/декремента
     static int32_t  editingValue;     // Переменная, используемая при редактировании параметра
 
   

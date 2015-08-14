@@ -222,9 +222,9 @@ void DMA2_Stream4_IRQHandler(void)
 
   rc.rcDecoder.timerHandler(60);
 
-  uDcSensor.putSample(adc3.getBufer()[0]);
-  uDcSensor.putSample(adc3.getBufer()[1]);
-  uDcSensor.putSample(adc3.getBufer()[2]);
+  uDcBusSensor.putSample(adc3.getBufer()[0]);
+  uDcBusSensor.putSample(adc3.getBufer()[1]);
+  uDcBusSensor.putSample(adc3.getBufer()[2]);
   uChargeSensor.putSample(adc1.getBufer()[0]);
   iChargeSensor.putSample(adc1.getBufer()[1]);
   

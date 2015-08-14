@@ -57,13 +57,10 @@ void StartTask500mls(void const * argument)
 
     //  Окончание самодиагностики BMS
 
-  vUDcBusCodeUCal.setValue((float)10);
-  vUChargeCodeUCal.setValue((float)10);
-  vIChargeCodeUCal.setValue((float)10);
   
-  uDcSensor.setCalibration( vUDcBusCodeUCal.getValueFlt() );
-  uChargeSensor.setCalibration( vUChargeCodeUCal.getValueFlt() );
-  iChargeSensor.setCalibration( vIChargeCodeUCal.getValueFlt() );
+//  uDcBusSensor.setCalibration( vUDcBusCodeUCal.getValueFlt() );
+//  uChargeSensor.setCalibration( vUChargeCodeUCal.getValueFlt() );
+//  iChargeSensor.setCalibration( vIChargeCodeICal.getValueFlt() );
 
 
   for(;;)
@@ -79,49 +76,31 @@ void StartTask500mls(void const * argument)
     bmsAssembly.readFlagRegisters();
     bmsAssembly.startCellVoltageMeasurement();
     
-//    vUDcBusCodeUCal.setValue((float)10);
-    
-//    uDcSensor.setCalibration( vUDcBusCodeUCal.getValueFlt() );
-//    printf ("uDcValue = %f\n", uDcSensor.getValue());
-    uDcBus.setValue( uDcSensor.getValue() );
-//    printf("DC Bus Voltage = %f\n", uDcBus.getValueFlt());
-//    printf ("CalValue(int) =%d, (float) =%f\n", vUDcBusCodeUCal.getValue(), vUDcBusCodeUCal.getValueFlt());
-//    printf ("CalValue(int) =%d, (float) =%f\n", vUDcBusCodeUCal.getValue(), vUDcBusCodeUCal.getValueFlt());
+    // Чтение датчиков
+    vUDcBus.setValue( uDcBusSensor.getValue() );
+    vUCharge.setValue( uChargeSensor.getValue() );
+    vICharge.setValue( iChargeSensor.getValue() );
 
+    // Обработка калибровки датчиков
     if (vUDcBusCodeUCal.getCalibratingState()==TRUE){
-      printf("U DC Bus AutoCal K = %f\n", uDcSensor.getCalibration());
-      printf("CalVoltage    = %d\n", vUCalibrating.getValue());
-      printf("SensorVoltage = %f\n", uDcSensor.getValue());
-      printf("Cal Err (int)   = %d\n", vUDcBusCodeUCal.getValue());
-      printf("Cal Err (float) = %f\n", vUDcBusCodeUCal.getValueFlt());
-
-      float error_ = vUCalibrating.getValue()/uDcSensor.getValue();
-      if (error_ < 0.1) {error_ = 0.1;}
-      if (error_ > 2)   {error_ = 2;}
-
-//      vUDcBusCodeUCal.setCalibrationError( 1 - (vUCalibrating.getValue()/uDcSensor.getValue() ) );
-      vUDcBusCodeUCal.setCalibrationError( 1 - error_ );
-      uDcSensor.setCalibration( uDcSensor.getCalibration() * (1 - vUDcBusCodeUCal.getCalibrationError() ) );
-      vUDcBusCodeUCal.setAutocalibratingValue(uDcSensor.getCalibration());
+      vUDcBusCodeUCal.setAutocalibratingValue(uDcBusSensor.getMean());
     }
-
     if (vUChargeCodeUCal.getCalibratingState()==TRUE){
-      printf("uCharge AutoCal K = %f\n", uChargeSensor.getCalibration());
-      printf("CalVoltage    = %d\n", vUCalibrating.getValue());
-      printf("SensorVoltage = %f\n", uChargeSensor.getValue());
-      printf("Cal Err (int)   = %d\n", vUChargeCodeUCal.getValue());
-      printf("Cal Err (float) = %f\n", vUChargeCodeUCal.getValueFlt());
-      
-      float error_ = vUCalibrating.getValue()/uDcSensor.getValue();
-      if (error_ < 0.1) {error_ = 0.1;}
-      if (error_ > 2)   {error_ = 2;}
-
-//      vUChargeCodeUCal.setCalibrationError( 1 - (vUCalibrating.getValue()/ uChargeSensor.getValue() ) );
-      vUChargeCodeUCal.setCalibrationError( 1 - error_ );
-      uChargeSensor.setCalibration( uChargeSensor.getCalibration() * (1 - vUChargeCodeUCal.getCalibrationError() ) );
-      vUChargeCodeUCal.setAutocalibratingValue(uChargeSensor.getCalibration());
+      vUChargeCodeUCal.setAutocalibratingValue(uChargeSensor.getMean());
+    }
+    if (vIChargeCodeICal.getCalibratingState()==TRUE){
+      vIChargeCodeICal.setAutocalibratingValue(iChargeSensor.getMean());
     }
     
+    if (vUDcBusCodeZero.getCalibratingState()==TRUE){
+      vUDcBusCodeZero.setAutocalibratingValue(uDcBusSensor.getMean());
+    }
+    if (vUChargeCodeZero.getCalibratingState()==TRUE){
+      vUChargeCodeZero.setAutocalibratingValue(uChargeSensor.getMean());
+    }
+    if (vIChargeCodeZero.getCalibratingState()==TRUE){
+      vIChargeCodeZero.setAutocalibratingValue(iChargeSensor.getMean());
+    }
 //    bms0.dischargeControl(0xAA);
 //    bms0.closingControl(0xAA);
     

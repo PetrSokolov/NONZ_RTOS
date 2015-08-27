@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-uint8_t picRegLatA, picRegLatB, picRegDirA, picRegDirB, picRegPortA, picRegPortB;
+uint8_t picRegLatA, picRegLatB, picRegDirA, picRegDirB, picRegPortA, picRegPortB, onPwm=0, offPwm=0;
 
 void StartTask500mls(void const * argument)
 {
@@ -57,11 +57,23 @@ void StartTask500mls(void const * argument)
 
     //  Окончание самодиагностики BMS
 
-  
-//  uDcBusSensor.setCalibration( vUDcBusCodeUCal.getValueFlt() );
-//  uChargeSensor.setCalibration( vUChargeCodeUCal.getValueFlt() );
-//  iChargeSensor.setCalibration( vIChargeCodeICal.getValueFlt() );
+    //  Старт преобразования
+    bmsAssembly.startCellVoltageMeasurement();
+    // Задержка на преобразования ADC
+    osDelay(20);
 
+  
+// Затычка на время отсутствия FRAM. Инициализация float данных
+
+  vICalibrating.setValue(vICalibrating.getValue());
+
+  vUDcBusCodeUCal.setValue(vUDcBusCodeUCal.getValue());
+  vUDcBusCodeZero.setValue(vUDcBusCodeZero.getValue());
+  vIChargeCodeICal.setValue(vIChargeCodeICal.getValue());
+  vUChargeCodeUCal.setValue(vUChargeCodeUCal.getValue());
+  vIChargeCodeZero.setValue(vIChargeCodeZero.getValue());
+  vUChargeCodeZero.setValue(vUChargeCodeZero.getValue());
+  
 
   for(;;)
   {
@@ -101,11 +113,19 @@ void StartTask500mls(void const * argument)
     if (vIChargeCodeZero.getCalibratingState()==TRUE){
       vIChargeCodeZero.setAutocalibratingValue(iChargeSensor.getMean());
     }
+    
+    if (onPwm) {  pwm.start(); onPwm =0; }
+    if (offPwm) {  pwm.stop(); offPwm =0; }
+    
+    bms1.balanceControl(0.05);
+    bms1.dischargeControl(2.4);
+
+//    bms0.bypassControl(0xAA);
 //    bms0.dischargeControl(0xAA);
 //    bms0.closingControl(0xAA);
     
 /*    mram.resetWriteProtect();
-    mram.writeEnable();
+    mram.writeEnable();   
     mram.readStatusRegister();
     mram.writeDataBytes();
     mram.readDataBytes();*/

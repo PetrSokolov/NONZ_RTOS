@@ -97,7 +97,7 @@ void Editor::getString(string& str, uint16_t row)
   // Перенос знака "-" в левый край
   size_t found_ = str.find('-');
   if (found_ != string::npos){
-    printf("- found at %d\n", found_);
+//    printf("- found at %d\n", found_);
     str.erase(found_, 1);
     str.insert(0, "-");
   }

@@ -15,6 +15,7 @@ using namespace src;
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
 extern SPI_HandleTypeDef hspi1, hspi2;
+extern TIM_HandleTypeDef htim1;
 extern DMA_HandleTypeDef hdma_spi1_tx;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi2_tx;
@@ -237,7 +238,7 @@ DecoratorFltCalibrated vUDcBusCodeUCal (900,
   Adc adc1(5), adc3(3);
   
   // ШИМ
-  Pwm2phaseNONZ pwm(&pwmDeathTime, &pwmValue);
+  Pwm2phaseNONZ pwm(&pwmDeathTime, &pwmValue, &htim1);
 
   //  Датчик напряжения на шине постоянного тока. Напряжение  и ток на заряжаемой батарее
   AnalogDcRmsSensor uDcBusSensor(60e-6, 0.1,&vUDcBusCodeUCal, &vUDcBusCodeZero, &vUCalibrating);

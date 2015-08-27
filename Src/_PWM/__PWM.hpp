@@ -13,7 +13,7 @@
 
 #include "stdint.h"
 #include "..\_Interfaces\__IVariable.hpp"
-//#include "stm32f10x.h"
+#include "tim.h"  // TIM_HandleTypeDef
 
 #ifdef __cplusplus
  extern "C" {
@@ -42,6 +42,8 @@ class Pwm{
             void setBlock 		(float block);
     virtual	void setValue 		(float value) =0;
     virtual	void init			 		(void) = 0;
+    virtual	void start		 		(void) = 0;
+    virtual	void stop			 		(void) = 0;
     virtual	uint16_t computeDeathTime (float deathTime) = 0;
 		
   protected:
@@ -78,10 +80,14 @@ class Pwm{
 
 class Pwm2phaseNONZ : public Pwm{
 	public:
-    Pwm2phaseNONZ(IVariable* deathTime, IVariable* value) : Pwm(deathTime, value) {}
+    Pwm2phaseNONZ(IVariable* deathTime, IVariable* value, TIM_HandleTypeDef *htim) : Pwm(deathTime, value) { _htim = htim; }
     virtual void setValue	(float value);
 		virtual void init	    (void);
+    virtual	void start		(void);
+    virtual	void stop			(void);
 		virtual uint16_t computeDeathTime (float deathTime);
+  private:
+    TIM_HandleTypeDef *_htim;   // Структура настроек модуля таймера
 };
 
 }	// namespace src

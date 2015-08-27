@@ -67,9 +67,14 @@ typedef struct {
 
 }LtcConfig_t;
 
-//class SpiPortPic;
+/*typedef struct {
+  float cell[12];
+}CellVoltages_t;
+*/
+// Разделить на абстракции LTC и PIC. Класс Bms состовить из них
+// ячейки сделать типом и передавать другим объектам
 
-class Bms{// : public ISpiMessage{
+class Bms{
   public:
     Bms(uint8_t  chipSelect, uint8_t chipAdres, SpiMode  spiModeLTC, SpiMode  spiModePort, uint16_t spiFrequency, uint16_t spiPortFrequency, ISpiDmaExchange* spiHandler, ISpiDmaExchange* spiPortHandler)
        { _chipSelect = chipSelect;
@@ -82,6 +87,8 @@ class Bms{// : public ISpiMessage{
 		     _diagnosticAdcTest1Fail =0;
 		     _diagnosticAdcTest2Fail =0;
 		     _diagnosticOpenWire =0;
+         _cellDefference = 0.1;
+         _maxCellVoltage = 2.5;
          _configRegisterGroup.registers[4] = 0x87;  //2.496V
          _configRegisterGroup.registers[5] = 0x8F;  //2.688V
          _configRegisterGroup.bits.cdc =3;
@@ -98,11 +105,11 @@ class Bms{// : public ISpiMessage{
            void     startCellVoltageMeasurement (void);  //  Function that starts Cell Voltage measurement
            uint16_t readCellVoltage             (void);  //  Read All Cell Voltage Group
            uint16_t readFlagRegisters           (void);  //  Read Flag Register Group
-    inline float    getCellVoltage              (uint8_t cell)      { return _cell_voltages[cell]; }
-           void     balanceControl              (uint16_t  data);  //  Управление балансировкой
+    inline float    getCellVoltage              (uint8_t cell)      { return _cellVoltage[cell]; }
+           void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
     //  PIC
-           void     dischargeControl            (uint16_t  data);  //  Управление разрядом
-           void     closingControl              (uint16_t  data);  //  Управление шунтированием
+           void     dischargeControl            (float maxCellVoltage);  // Управление разрядом. 
+           void     bypassControl               (uint16_t  data);       // Управление шунтированием
 
 	// Самодиагностика
     void     startDiagnosticRefMux  (void);  //  Start Diagnose and Poll Status
@@ -120,8 +127,15 @@ class Bms{// : public ISpiMessage{
     inline uint16_t getDiagnosticAdcTest1Fail(void)   { return _diagnosticAdcTest1Fail; }
     inline uint16_t getDiagnosticAdcTest2Fail(void)   { return _diagnosticAdcTest2Fail; }
     
-	SpiPortPic*      spiPortPic;             //  SPI - Расширитель порта
+	  SpiPortPic*      spiPortPic;             //  SPI - Расширитель порта
 
+    // Информация для отладки
+    inline uint16_t  getBalanceByte   (void) { return _balanceByte; }            // Для отладки. Удалить
+    inline uint16_t  getDischargeByte (void) { return _dischargeByte; }          // Для отладки. Удалить
+    inline void      setBalanceByte   (uint16_t balanceByte)   { _balanceByte = balanceByte; }   // Для отладки. Удалить
+    inline void      setDischargeByte (uint16_t dischargeByte) { _dischargeByte = dischargeByte; } // Для отладки. Удалить
+
+    
   private:
     void             writeCommand (uint8_t command, uint8_t pec);  //  write command
     uint8_t          pec8_calc    (uint8_t len, uint8_t *data);
@@ -130,7 +144,10 @@ class Bms{// : public ISpiMessage{
     uint8_t          _chipSelect;
     SpiMode          _spiMode;
     uint16_t         _spiFrequency;
-    float            _cell_voltages[12];        //  Напряжение на ячейках [В]
+    float            _cellVoltage[12];          // Напряжение на ячейках [В]
+    float            _cellDefference;           // Разница заряда, при котором включается балансировка
+    float            _maxCellVoltage;           // Максимальное напряжение на ячейке
+//    CellVoltages_t   _cellVoltages;            //  Напряжение на ячейках [В]
     uint16_t         _cellCodes[12];			      //  Код АЦП на ячейках
     uint16_t         _cellUnderVoltage;			    //  Регистр недостаточного напряжения на ячейках [C12,C11,C10,C9,...C1]
     uint16_t         _cellOverVoltage;			    //  Регистр превышения напряжения на ячейках [C12,C11,C10,C9,...C1]
@@ -140,6 +157,8 @@ class Bms{// : public ISpiMessage{
 	  uint16_t         _diagnosticOpenWire;       // Регистр, отображающий результат теста на обрыв измеряющией цепи
 	  uint16_t         _diagnosticAdcTest1Fail;   // Не пройден тест 1 АЦП
     uint16_t         _diagnosticAdcTest2Fail;   // Не пройден тест 2 АЦП
+    uint16_t         _balanceByte;            // Для отладки. Удалить
+    uint16_t         _dischargeByte;          // Для отладки. Удалить
 
     union{
       uint8_t          registers[6];

@@ -69,6 +69,7 @@ void MX_FREERTOS_Init(void);
 
 int main(void)
 
+
 {
 
   /* USER CODE BEGIN 1 */
@@ -109,11 +110,12 @@ int main(void)
   HAL_TIM_Base_Start(&htim1);
   HAL_TIM_OC_Start(&htim2, TIM_CHANNEL_2);
   
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+//  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+//  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+//  pwm.start();
 
-  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
-  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
+//  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
+//  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
 
   __HAL_RCC_DMA2_CLK_ENABLE();
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1.getBufer(), adc1.getBuferSize());

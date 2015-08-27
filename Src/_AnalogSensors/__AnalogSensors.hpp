@@ -106,10 +106,10 @@ inline	void AnalogDcRmsSensor::getValue  (float &value)
 //	GetValue				- Получить значение в единицах измерения (В, А, ...). Аргументу присваивается значение.
 inline	float AnalogDcRmsSensor::getValue  ()
 {
-  printf("mean      = %f\n", _rmsFilter.getMean());
-  printf("code zero = %f\n", _codeZero->getValueFlt());
-  printf("uCal      = %f\n", _uCal->getValueFlt());
-  printf("code uCal = %f\n\n", _codeUcal->getValueFlt());
+//  printf("mean      = %f\n", _rmsFilter.getMean());
+//  printf("code zero = %f\n", _codeZero->getValueFlt());
+//  printf("uCal      = %f\n", _uCal->getValueFlt());
+//  printf("code uCal = %f\n\n", _codeUcal->getValueFlt());
   return ((_rmsFilter.getMean() - _codeZero->getValueFlt())*_uCal->getValueFlt())/_codeUcal->getValueFlt();
 }
 

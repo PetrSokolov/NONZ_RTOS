@@ -65,6 +65,6 @@ enum Spi2CsDevice { CS_PORT_0,  ///<  Выбор устройства - расш
 
 }
 
-
+#define countof(a)   (sizeof(a) / sizeof(*(a)))	
 
 #endif	//define CONSTANTSDEFINITIONS_HPP

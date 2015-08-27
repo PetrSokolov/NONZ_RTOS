@@ -122,8 +122,23 @@ void Pwm2phaseNONZ::init (void)
 	_channel1Pulse = (uint16_t) (_dutyCycle1 * (_timerPeriod - 1));
 	_channel2Pulse = (uint16_t) (_dutyCycle2 * (_timerPeriod - 1));
 	_channel3Pulse = (uint16_t) (_dutyCycle3 * (_timerPeriod - 1));
+}
 
+void Pwm2phaseNONZ::start (void)
+{
+  HAL_TIM_PWM_Start(_htim,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(_htim,TIM_CHANNEL_2);
+  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
+  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
 
+}
+
+void Pwm2phaseNONZ::stop (void)
+{
+  HAL_TIM_PWM_Stop(_htim,TIM_CHANNEL_1);
+  HAL_TIM_PWM_Stop(_htim,TIM_CHANNEL_2);
+  HAL_TIMEx_PWMN_Stop(_htim,TIM_CHANNEL_1);
+  HAL_TIMEx_PWMN_Stop(_htim,TIM_CHANNEL_2);
 }
 
 

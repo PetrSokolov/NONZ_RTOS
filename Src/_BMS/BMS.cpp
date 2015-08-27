@@ -228,7 +228,7 @@ uint16_t Bms::diagnosticOpenWireAdc()
 
   //  Копирование результата
   for (i=0; i<12; i++){
-    cellVoltages_1[i] = _cell_voltages[i];
+    cellVoltages_1[i] = _cellVoltage[i];
   }
 
   writeCommand(STOWAD_ALL, STOWAD_ALL_PEC);
@@ -242,16 +242,16 @@ uint16_t Bms::diagnosticOpenWireAdc()
   }
   
   //  Обработка результатов
-  if(cellVoltages_1[0]<0 || _cell_voltages[0]<0){
+  if(cellVoltages_1[0]<0 || _cellVoltage[0]<0){
     _diagnosticOpenWire |= BIT_0;
   }
 
-  if(cellVoltages_1[11]<0 || _cell_voltages[11]<0){
+  if(cellVoltages_1[11]<0 || _cellVoltage[11]<0){
     _diagnosticOpenWire |= BIT_11;
   }
 
   for (i=1; i<11; i++){
-    if (((_cell_voltages[i+1] - cellVoltages_1[i+1])>(float)0.2) || (_cellCodes[i+1])==0xFFF){
+    if (((_cellVoltage[i+1] - cellVoltages_1[i+1])>(float)0.2) || (_cellCodes[i+1])==0xFFF){
      _diagnosticOpenWire |= 1<<i;
     }
   }
@@ -364,11 +364,11 @@ uint16_t Bms::readCellVoltage (void)
             temp_ = pointerToRxBytes_[data_counter++];
             temp2_ = (uint16_t)(pointerToRxBytes_[data_counter]&0x0F)<<8;
             _cellCodes[k] = temp_ + temp2_;
-            _cell_voltages[k] = (_cellCodes[k] -512) * 1.5e-3;
+            _cellVoltage[k] = (_cellCodes[k] -512) * 1.5e-3;
             temp2_ = (pointerToRxBytes_[data_counter++])>>4;
             temp_ =  (pointerToRxBytes_[data_counter++])<<4;
             _cellCodes[k+1] = temp_ + temp2_;
-            _cell_voltages[k+1] = (_cellCodes[k+1] -512) * 1.5e-3;
+            _cellVoltage[k+1] = (_cellCodes[k+1] -512) * 1.5e-3;
           }
     return 1;
   }
@@ -445,27 +445,90 @@ uint16_t Bms::readDiagnosticRefMux (void)
 
 //-------------------------------------------------------------------------------------
 //  Управление балансировкой
-void Bms::balanceControl (uint16_t  data)
+void Bms::balanceControl (float  cellDefference)
 {
-  _configRegisterGroup.registers[1] = data & 0xFF;
+  uint16_t data_ =0;
+  uint16_t i_;
+  uint16_t size_;
+  float minCellVoltage =5;
+  
+  size_ = countof(_cellVoltage);
+
+  // Находжение минимального напряжения в ячейках
+  //
+  for (i_=0; i_<size_; i_++){
+   if (_cellVoltage[i_] < minCellVoltage) {
+     minCellVoltage = _cellVoltage[i_]; 
+   }
+  }
+  
+  // Поиск ячеек, которые нуждаются в балансировке
+  //
+  for (i_=0; i_<size_; i_++){
+   if (_cellVoltage[i_] - minCellVoltage > cellDefference) {
+     data_ |= 1<<i_;
+   }
+  }
+  
+  _configRegisterGroup.registers[1]  = data_ & 0xFF;
   _configRegisterGroup.registers[2] &= 0x0F;
-  _configRegisterGroup.registers[2] |= (data & 0xF00)>>8;
+  _configRegisterGroup.registers[2] |= (data_ & 0xF00)>>8;
   
   writeConfigRegisterGroup();
+
+  setBalanceByte (data_);            // Для отладки. Удалить
+  if (data_ != 0){
+    printf ("Balance Cell %#X\n", data_);
+  }
+
 }
 
 
 //-------------------------------------------------------------------------------------
 //  Управление разрядом
-void Bms::dischargeControl (uint16_t  data)
+void Bms::dischargeControl (float  maxCellVoltage)
 {
-  spiPortPic->writeRegister (data, 0x14); // OLATA
+  uint8_t  data_ =0xFF;
+  uint16_t cells_ =0;
+  uint16_t i_;
+  //uint16_t j_;
+  bool     cellPair1_;  // Первая ячейка разряжаемой пары
+  bool     cellPair2_;  // Вторая ячейка разряжаемой пары
+  uint16_t size_;
+  
+  size_ = countof(_cellVoltage);
+  
+  // Находжение ячеек, напряжение которых превышает величину maxCellVoltage
+  //
+  for (i_=0; i_<size_; i_++){
+   if (_cellVoltage[i_] > maxCellVoltage) {
+     cells_ |= 1<<i_; 
+   }
+  }
+  
+  // Установка пинов на разряд ячеек (по 2 ячейки на пин)
+  //
+  for (i_=0; i_<(size_>>1); i_++) {
+    cellPair1_ = (bool) (cells_ & (1<<(i_ * 2)));
+    cellPair2_ = (bool) (cells_ & (1<<(i_ * 2 + 1)));
+    if ((cellPair1_==true) || (cellPair2_==true)) {
+      data_ &= ~(1<<i_); 
+    }
+  }
+  
+  spiPortPic->writeRegister (data_, 0x14); // OLATA
+
+  setDischargeByte (0xFF - data_);          // Для отладки. Удалить
+
+  if (data_ != 0xFF){
+    printf ("Discharge Cell %#X\n", data_);
+  }
 }
 
 
 //-------------------------------------------------------------------------------------
 //  Управление шунтированием
-void Bms::closingControl (uint16_t  data)
+void Bms::bypassControl (uint16_t  data)
 {
   spiPortPic->writeRegister (data, 0x15); // OLATB
 }

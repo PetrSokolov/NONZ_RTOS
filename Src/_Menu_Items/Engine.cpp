@@ -182,12 +182,12 @@ void  MenuEngine::menuMoveForward (void)
   // Проверка на переход в редактор
   var = _containerOfVars->getContent( (getAvailableElement(getIm()))->getId() );
   if(var != NULL){
-   printf("Is Variable\n");
+//   printf("Is Variable\n");
    _editor.setVariable(var);                     //  Передача редактору объекта типа IVariable
    _editor.setViewerMode(TRUE);
   }
    else{
-     printf("Is NO Variable\n");
+//     printf("Is NO Variable\n");
      // Проверка на переход на следующий уровень меню
      menuItem_ = getAvailableElement(getIm());
      if(menuItem_ != NULL){

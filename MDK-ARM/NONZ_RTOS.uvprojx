@@ -162,7 +162,7 @@
             <CpuDllArguments></CpuDllArguments>
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
-            <InitializationFile></InitializationFile>
+            <InitializationFile>Start_ITMLOG.ini</InitializationFile>
             <Driver>Segger\JL2CM3.dll</Driver>
           </TargetDlls>
         </DebugOption>
@@ -836,6 +836,16 @@
               <FileName>Mram.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\Src\_MRAM\Mram.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DcBus</GroupName>
+          <Files>
+            <File>
+              <FileName>DcBus.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Src\Charger\DcBus\DcBus.cpp</FilePath>
             </File>
           </Files>
         </Group>

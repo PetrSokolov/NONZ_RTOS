@@ -106,6 +106,8 @@ class Bms{
            uint16_t readCellVoltage             (void);  //  Read All Cell Voltage Group
            uint16_t readFlagRegisters           (void);  //  Read Flag Register Group
     inline float    getCellVoltage              (uint8_t cell)      { return _cellVoltage[cell]; }
+                                                         //  Суммарное напряжение модуля. Для ускорения обработки сделано инлайном без цикла
+    inline float    getModuleVoltage            (void)      { return _cellVoltage[0]+_cellVoltage[1]+_cellVoltage[2]+_cellVoltage[3]+_cellVoltage[4]+_cellVoltage[5]+_cellVoltage[6]+_cellVoltage[7]+_cellVoltage[8]+_cellVoltage[9]+_cellVoltage[10]+_cellVoltage[11]; }
            void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
     //  PIC
            void     dischargeControl            (float maxCellVoltage);  // Управление разрядом. 
@@ -184,6 +186,10 @@ class BmsAssembly{
     uint16_t readCellVoltage             (void);  //  Read All Cell Voltage Group
     uint16_t readFlagRegisters           (void);  //  Read Flag Register Group
     float    getCellVoltage              (uint16_t module, uint8_t cell);
+    void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
+    //  PIC
+    void     dischargeControl            (float maxCellVoltage);  // Управление разрядом. 
+    void     bypassControl               (uint16_t  data);       // Управление шунтированием
 
 	// Самодиагностика
     void     startDiagnosticRefMux(void);         //  Запуск теста опоры и мультиплексора на всех модулях BMS

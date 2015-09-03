@@ -117,8 +117,10 @@ void StartTask500mls(void const * argument)
     if (onPwm) {  pwm.start(); onPwm =0; }
     if (offPwm) {  pwm.stop(); offPwm =0; }
     
-    bms1.balanceControl(0.05);
-    bms1.dischargeControl(2.4);
+    bmsAssembly.balanceControl(0.05);
+    bmsAssembly.dischargeControl(-0.4);
+
+    osSemaphoreRelease(binarySemTSK1000mls);
 
 //    bms0.bypassControl(0xAA);
 //    bms0.dischargeControl(0xAA);

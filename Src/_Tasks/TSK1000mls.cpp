@@ -24,6 +24,7 @@ uint16_t timeCharge=0, size;
 //int16_t numbers=0, pages=0, p1=0, p2=0, p3=0;
 //char names[20];
 float pwmval =0;
+float bms1Voltage,bms2Voltage,bms3Voltage,bms4Voltage,bms5Voltage,bms6Voltage,bms7Voltage,bms8Voltage,bms9Voltage,bms10Voltage,bms11Voltage,bms12Voltage;
 
 void StartTask1000mls(void const * argument)
 {
@@ -76,7 +77,23 @@ void StartTask1000mls(void const * argument)
 //       case 9:  {bms = &bms9;}break;
 //       case 10: {bms = &bms10;}break;
 //     }
-     size = sprintf(transferChars, "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", timeCharge, bms->getCellVoltage(0),bms->getCellVoltage(1),bms->getCellVoltage(2),bms->getCellVoltage(3),bms->getCellVoltage(4),bms->getCellVoltage(5),bms->getCellVoltage(6),bms->getCellVoltage(7),bms->getCellVoltage(8),bms->getCellVoltage(9),bms->getCellVoltage(10),bms->getCellVoltage(11));
+
+//     size = sprintf(transferChars, "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", timeCharge, bms->getCellVoltage(0),bms->getCellVoltage(1),bms->getCellVoltage(2),bms->getCellVoltage(3),bms->getCellVoltage(4),bms->getCellVoltage(5),bms->getCellVoltage(6),bms->getCellVoltage(7),bms->getCellVoltage(8),bms->getCellVoltage(9),bms->getCellVoltage(10),bms->getCellVoltage(11));
+//   size = sprintf(transferChars, "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", timeCharge, bms0->getModuleVoltage(),bms1->getModuleVoltage(),bms2->getModuleVoltage(),bms3->getModuleVoltage(),bms4->getModuleVoltage(),bms5->getModuleVoltage(),bms6->getModuleVoltage(),bms7->getModuleVoltage(),bms8->getModuleVoltage(),bms9->getModuleVoltage(),bms10->getModuleVoltage(),bms11->getModuleVoltage());
+bms1Voltage = bms0.getModuleVoltage();
+bms2Voltage = bms1.getModuleVoltage();
+bms3Voltage = bms2.getModuleVoltage();
+bms4Voltage = bms3.getModuleVoltage();
+bms5Voltage = bms4.getModuleVoltage();
+bms6Voltage = bms5.getModuleVoltage();
+bms7Voltage = bms6.getModuleVoltage();
+bms8Voltage = bms7.getModuleVoltage();
+bms9Voltage = bms8.getModuleVoltage();
+bms10Voltage = bms9.getModuleVoltage();
+bms11Voltage = bms10.getModuleVoltage();
+bms12Voltage = 0;
+
+   size = sprintf(transferChars, "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", timeCharge, bms1Voltage, bms2Voltage, bms3Voltage, bms4Voltage, bms5Voltage, bms6Voltage, bms7Voltage, bms8Voltage, bms9Voltage, bms10Voltage, bms11Voltage, bms12Voltage);
      if (size>0){
        for(int i=0; i<size; i++){
          ITM_SendCharX (bmsNr+1, transferChars[i]);

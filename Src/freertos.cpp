@@ -325,7 +325,7 @@ void Timer500mlsCallback(void const * argument)
 /* Timer1000mlsCallback function */
 void Timer1000mlsCallback(void const * argument)
 {
-  osSemaphoreRelease(binarySemTSK1000mls);
+//  osSemaphoreRelease(binarySemTSK1000mls);
 }
 
 /* Timer2Callback02 function */

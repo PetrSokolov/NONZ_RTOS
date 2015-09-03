@@ -215,7 +215,7 @@ uint16_t Bms::diagnosticOpenWireAdc()
   float    cellVoltages_1[12];
   uint8_t  i; //pecErr_;
 
-//  pecErr_ =0;
+  _diagnosticOpenWire =0;
 
   //  Первый тест
   writeCommand(STOWAD_ALL, STOWAD_ALL_PEC);
@@ -233,7 +233,7 @@ uint16_t Bms::diagnosticOpenWireAdc()
 
   writeCommand(STOWAD_ALL, STOWAD_ALL_PEC);
 
-  osDelay(20);
+  osDelay(50);
 
   //  Второй тест
   if (readCellVoltage() == pdFALSE){
@@ -610,6 +610,28 @@ void BmsAssembly::portInit (void)
   }
 }
 
+
+//-------------------------------------------------------------------------------------
+void BmsAssembly::balanceControl(float  cellDefference)
+{
+  for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
+    (*_i).second->balanceControl(cellDefference);
+  }
+}
+//-------------------------------------------------------------------------------------
+void BmsAssembly::dischargeControl (float maxCellVoltage)  // Управление разрядом. 
+{
+  for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
+    (*_i).second->dischargeControl(maxCellVoltage);
+  }
+}
+//-------------------------------------------------------------------------------------
+void BmsAssembly::bypassControl (uint16_t  data)  // Управление разрядом. 
+{
+//  for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
+//    (*_i).second->bypassControl(maxCellVoltage);
+//  }
+}
 
 //-------------------------------------------------------------------------------------
 void BmsAssembly::writeConfigRegisterGroup(void)

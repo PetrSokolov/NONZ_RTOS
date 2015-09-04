@@ -33,23 +33,26 @@ using namespace src;
 //-------------------------------------------------------------------------------------
 //  Публичные методы
 //-------------------------------------------------------------------------------------
-void DcBus::connect (void)
+void DcBus::activate (bool state)
 {
-  setInverterSwitch(true);
-  setBypassSwitch(false);
-  setDcBusSwitch(true);
+  if(state == true){
+    setInverterSwitch(true);
+    setBypassSwitch(false);
+    setDcBusSwitch(true);
+    setDcBusSwitch(true);
+    osDelay(80);  // Задержка на включение реле
+    
+  }
+    else{
+      setInverterSwitch(false);
+      setBypassSwitch(false);
+      setDcBusSwitch(false);
+    }
   
-  osDelay(80);  // Задержка на включение реле
   
   
 }
 
-void DcBus::disconnect (void)
-{
-  setInverterSwitch(false);
-  setBypassSwitch(false);
-  setDcBusSwitch(false);
-}
 
 //-------------------------------------------------------------------------------------
 //  Приватные методы

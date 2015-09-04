@@ -282,6 +282,10 @@ DecoratorFltCalibrated vUDcBusCodeUCal (900,
 
   BmsAssembly bmsAssembly;  // Объект-контейнер, объединяющий все модули BMS
   
+  // Абстракция Charger
+  // Dc-Шина
+  DcBus dcBus;
+  
   // SPI порты на микроконтроллере PIC
 //  SpiPortPic spiPortPic6(6, 0, 700, &spi2Handler, 0xFF, 0xFF, 0x00, 0x00),
 //             spiPortPic8(8, 0, 700, &spi2Handler, 0xFF, 0xFF, 0x00, 0x00);

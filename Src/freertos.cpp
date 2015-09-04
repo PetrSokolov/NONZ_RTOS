@@ -51,6 +51,7 @@ osThreadId TaskRCHandle;
 osThreadId TaskSpi1Handle;
 osThreadId TaskSpi2Handle;
 osMessageQId queueRc;
+//osMessageQId queueDcBus;
 
 osTimerId Timer5mlsHandle;
 osTimerId Timer500mlsHandle;
@@ -78,6 +79,7 @@ void StartTask5mls(void const * argument);
 void StartTaskRC(void const * argument);
 void StartTaskSpi1(void const * argument);
 void StartTaskSpi2(void const * argument);
+void StartTaskDcBus(void const * argument);
 void Timer5mlsCallback(void const * argument);
 void Timer500mlsCallback(void const * argument);
 void Timer1000mlsCallback(void const * argument);
@@ -214,6 +216,9 @@ void MX_FREERTOS_Init(void) {
 //-------------------------------------------------------------------------------------------------
   /* Create the thread(s) */
   /* definition and creation of Task1 */
+
+/* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
   osThreadDef(Task500mls, StartTask500mls, osPriorityNormal, 0, 512);
   Task500mlsHandle = osThreadCreate(osThread(Task500mls), NULL);
 
@@ -234,8 +239,9 @@ void MX_FREERTOS_Init(void) {
 
   osThreadDef(TaskSpi2, StartTaskSpi2, osPriorityNormal, 0, 256);
   TaskSpi2Handle = osThreadCreate(osThread(TaskSpi2), NULL);
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+
+  osThreadDef(TaskDcBus, StartTaskDcBus, osPriorityNormal, 0, 256);
+  TaskSpi2Handle = osThreadCreate(osThread(TaskDcBus), NULL);
   /* USER CODE END RTOS_THREADS */
 
 
@@ -243,11 +249,14 @@ void MX_FREERTOS_Init(void) {
   /* Create the queue(s) */
 
   /* definition and creation of myQueue02 */
-  osMessageQDef(QueueRc, 16, uint16_t);
-  queueRc = osMessageCreate(osMessageQ(QueueRc), NULL);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  osMessageQDef(QueueRc, 16, uint16_t);
+  queueRc = osMessageCreate(osMessageQ(QueueRc), NULL);
+
+//  osMessageQDef(QueueDcBus, 16, DcBusCommands);
+//  queueDcBus = osMessageCreate(osMessageQ(QueueDcBus), NULL);
   /* USER CODE END RTOS_QUEUES */
   
   // Start OS Timers

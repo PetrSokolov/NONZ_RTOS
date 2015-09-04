@@ -25,6 +25,8 @@ using namespace std;
 
 namespace src{	 
 
+#define NCELLS  12
+  
 typedef struct {
 // CFGR0
   uint32_t cdc:3;
@@ -107,7 +109,8 @@ class Bms{
            uint16_t readFlagRegisters           (void);  //  Read Flag Register Group
     inline float    getCellVoltage              (uint8_t cell)      { return _cellVoltage[cell]; }
                                                          //  Суммарное напряжение модуля. Для ускорения обработки сделано инлайном без цикла
-    inline float    getModuleVoltage            (void)      { return _cellVoltage[0]+_cellVoltage[1]+_cellVoltage[2]+_cellVoltage[3]+_cellVoltage[4]+_cellVoltage[5]+_cellVoltage[6]+_cellVoltage[7]+_cellVoltage[8]+_cellVoltage[9]+_cellVoltage[10]+_cellVoltage[11]; }
+    inline float    getTotalVoltage             (void)      { return _totalVoltage; }//_cellVoltage[0]+_cellVoltage[1]+_cellVoltage[2]+_cellVoltage[3]+_cellVoltage[4]+_cellVoltage[5]+_cellVoltage[6]+_cellVoltage[7]+_cellVoltage[8]+_cellVoltage[9]+_cellVoltage[10]+_cellVoltage[11]; }
+    inline float    getMaxCellVoltage           (void)  { return _maxCellVoltage; }
            void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
     //  PIC
            void     dischargeControl            (float maxCellVoltage);  // Управление разрядом. 
@@ -146,11 +149,12 @@ class Bms{
     uint8_t          _chipSelect;
     SpiMode          _spiMode;
     uint16_t         _spiFrequency;
-    float            _cellVoltage[12];          // Напряжение на ячейках [В]
+    float            _cellVoltage[NCELLS];          // Напряжение на ячейках [В]
+    float            _totalVoltage;             // Суммарное напряжение [В]
     float            _cellDefference;           // Разница заряда, при котором включается балансировка
     float            _maxCellVoltage;           // Максимальное напряжение на ячейке
 //    CellVoltages_t   _cellVoltages;            //  Напряжение на ячейках [В]
-    uint16_t         _cellCodes[12];			      //  Код АЦП на ячейках
+    uint16_t         _cellCodes[NCELLS];			      //  Код АЦП на ячейках
     uint16_t         _cellUnderVoltage;			    //  Регистр недостаточного напряжения на ячейках [C12,C11,C10,C9,...C1]
     uint16_t         _cellOverVoltage;			    //  Регистр превышения напряжения на ячейках [C12,C11,C10,C9,...C1]
     uint16_t         _diagnosticRegister;
@@ -174,22 +178,24 @@ class Bms{
 
 class BmsAssembly{
   public:
-    void     addModule                   (Bms* module);               //  Добавить модуль в карту
-    uint16_t getModule                   (uint16_t id, Bms*& module );//  Установить указатель на модуль из карты
+           void     addModule                   (Bms* module);               //  Добавить модуль в карту
+           uint16_t getModule                   (uint16_t id, Bms*& module );//  Установить указатель на модуль из карты
 //    uint16_t getModule                   (uint16_t id, Bms*& module );//  Установить указатель на модуль из карты
 
-    void     portInit                    (void);  //  Инициализация всех PIC-портов
-    void     writeConfigRegisterGroup    (void);  //  Запись регистров конфигурации во все модули BMS
-    uint16_t readConfigRegisterGroup     (void);  //  Read Configuration Register Group
-    uint16_t compareConfigRegisterGroup  (void);  //  Сравнение конфигурации прочитанной с текущей
-    void     startCellVoltageMeasurement (void);  //  Function that starts Cell Voltage measurement
-    uint16_t readCellVoltage             (void);  //  Read All Cell Voltage Group
-    uint16_t readFlagRegisters           (void);  //  Read Flag Register Group
-    float    getCellVoltage              (uint16_t module, uint8_t cell);
-    void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
+           void     portInit                    (void);  //  Инициализация всех PIC-портов
+           void     writeConfigRegisterGroup    (void);  //  Запись регистров конфигурации во все модули BMS
+           uint16_t readConfigRegisterGroup     (void);  //  Read Configuration Register Group
+           uint16_t compareConfigRegisterGroup  (void);  //  Сравнение конфигурации прочитанной с текущей
+           void     startCellVoltageMeasurement (void);  //  Function that starts Cell Voltage measurement
+           uint16_t readCellVoltage             (void);  //  Read All Cell Voltage Group
+           uint16_t readFlagRegisters           (void);  //  Read Flag Register Group
+           float    getCellVoltage              (uint16_t module, uint8_t cell);
+    inline float    getTotalVoltage             (void)  { return _totalVoltage; } // Суммарное напряжение всех модулей
+           void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
     //  PIC
-    void     dischargeControl            (float maxCellVoltage);  // Управление разрядом. 
-    void     bypassControl               (uint16_t  data);       // Управление шунтированием
+           void     dischargeControl            (float maxTotalVoltage);  // Управление разрядом. 
+           void     bypassControl               (uint16_t  data);         // Управление шунтированием
+           void     balanceIntermoduleControl   (float moduleDefference); // Управление балансировкой. Значение разницы напряжений между модулями
 
 	// Самодиагностика
     void     startDiagnosticRefMux(void);         //  Запуск теста опоры и мультиплексора на всех модулях BMS
@@ -209,8 +215,10 @@ class BmsAssembly{
     void      printDiagnostic      (void);
 
   private:
-    map<uint16_t, Bms*> _bmsModulesMap;
+    map<uint16_t, Bms*>           _bmsModulesMap;
     map<uint16_t, Bms*>::iterator _i;
+    float                         _totalVoltage;  // Суммарное напряжение [В]
+
     
 };
 

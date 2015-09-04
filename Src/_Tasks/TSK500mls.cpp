@@ -74,6 +74,7 @@ void StartTask500mls(void const * argument)
   vIChargeCodeZero.setValue(vIChargeCodeZero.getValue());
   vUChargeCodeZero.setValue(vUChargeCodeZero.getValue());
   
+  
 
   for(;;)
   {
@@ -118,9 +119,15 @@ void StartTask500mls(void const * argument)
     if (offPwm) {  pwm.stop(); offPwm =0; }
     
     bmsAssembly.balanceControl(0.05);
-    bmsAssembly.dischargeControl(-0.4);
+    if (bmsAssembly.getTotalVoltage() < 310.0){
+      bmsAssembly.balanceIntermoduleControl(0.3);
+    }
+      else{
+        bmsAssembly.dischargeControl(310.0);
+      }
 
     osSemaphoreRelease(binarySemTSK1000mls);
+    osMessagePut(dcBus.retQueueDcBus(), CONNECT, 0);
 
 //    bms0.bypassControl(0xAA);
 //    bms0.dischargeControl(0xAA);

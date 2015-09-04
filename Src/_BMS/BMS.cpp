@@ -212,7 +212,7 @@ void Bms::startDiagnosticRefMux()
 //  Возвращает TRUE в случае удачного прохождения теста
 uint16_t Bms::diagnosticOpenWireAdc()
 {
-  float    cellVoltages_1[12];
+  float    cellVoltages_1[NCELLS];
   uint8_t  i; //pecErr_;
 
   _diagnosticOpenWire =0;
@@ -227,7 +227,7 @@ uint16_t Bms::diagnosticOpenWireAdc()
   
 
   //  Копирование результата
-  for (i=0; i<12; i++){
+  for (i=0; i<NCELLS; i++){
     cellVoltages_1[i] = _cellVoltage[i];
   }
 
@@ -286,7 +286,7 @@ uint16_t Bms::readAdcTest1()
     return 0;
   }
    else{
-     for(i=0; i<12; i++){
+     for(i=0; i<NCELLS; i++){
       if (_cellCodes[i] != 0x555){
         _diagnosticAdcTest1Fail =1;
       }
@@ -307,7 +307,7 @@ uint16_t Bms::readAdcTest2()
     return 0;
   }
    else{
-     for(i=0; i<12; i++){
+     for(i=0; i<NCELLS; i++){
        if (_cellCodes[i] != 0xAAA){
          _diagnosticAdcTest2Fail =1;
        }
@@ -358,18 +358,22 @@ uint16_t Bms::readCellVoltage (void)
   if(pec_ == recievePec_){
     //  Копирования данных
     uint8_t data_counter =0;
+    float   totalVoltage_ =0;
     
-          for (uint8_t k = 0; k<12; k=k+2)
+          for (uint8_t k = 0; k<NCELLS; k=k+2)
           {
             temp_ = pointerToRxBytes_[data_counter++];
             temp2_ = (uint16_t)(pointerToRxBytes_[data_counter]&0x0F)<<8;
             _cellCodes[k] = temp_ + temp2_;
             _cellVoltage[k] = (_cellCodes[k] -512) * 1.5e-3;
+            totalVoltage_ += _cellVoltage[k];
             temp2_ = (pointerToRxBytes_[data_counter++])>>4;
             temp_ =  (pointerToRxBytes_[data_counter++])<<4;
             _cellCodes[k+1] = temp_ + temp2_;
             _cellVoltage[k+1] = (_cellCodes[k+1] -512) * 1.5e-3;
+            totalVoltage_ += _cellVoltage[k+1];
           }
+    _totalVoltage = totalVoltage_;
     return 1;
   }
    else{ return 0; }
@@ -471,14 +475,14 @@ void Bms::balanceControl (float  cellDefference)
   }
   
   _configRegisterGroup.registers[1]  = data_ & 0xFF;
-  _configRegisterGroup.registers[2] &= 0x0F;
+  _configRegisterGroup.registers[2] &= 0xF0;
   _configRegisterGroup.registers[2] |= (data_ & 0xF00)>>8;
   
   writeConfigRegisterGroup();
 
   setBalanceByte (data_);            // Для отладки. Удалить
   if (data_ != 0){
-    printf ("Balance Cell %#X\n", data_);
+//    printf ("Balance Cell %#X\n", data_);
   }
 
 }
@@ -521,7 +525,7 @@ void Bms::dischargeControl (float  maxCellVoltage)
   setDischargeByte (0xFF - data_);          // Для отладки. Удалить
 
   if (data_ != 0xFF){
-    printf ("Discharge Cell %#X\n", data_);
+//    printf ("Discharge Cell %#X\n", data_);
   }
 }
 
@@ -619,18 +623,58 @@ void BmsAssembly::balanceControl(float  cellDefference)
   }
 }
 //-------------------------------------------------------------------------------------
-void BmsAssembly::dischargeControl (float maxCellVoltage)  // Управление разрядом. 
+void BmsAssembly::dischargeControl (float maxTotalVoltage)  // Управление разрядом. 
 {
+  float maxCellVoltage_;
+  
+  maxCellVoltage_ = maxTotalVoltage/(_bmsModulesMap.size() * NCELLS);
   for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
-    (*_i).second->dischargeControl(maxCellVoltage);
+    (*_i).second->dischargeControl(maxCellVoltage_);
   }
 }
 //-------------------------------------------------------------------------------------
-void BmsAssembly::bypassControl (uint16_t  data)  // Управление разрядом. 
+void BmsAssembly::bypassControl (uint16_t  data)  // Управление шунтированием. 
 {
 //  for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
 //    (*_i).second->bypassControl(maxCellVoltage);
 //  }
+}
+
+//-------------------------------------------------------------------------------------
+// Управление балансировкой. Значение разницы напряжений между модулями
+// Модули, напряжение которых выше минимального на moduleDefference, разряжаются.
+// Разряд осуществляется путем разряда ячеек в модуле до заданного(рассчитанного) напряжения ограничения.
+void BmsAssembly::balanceIntermoduleControl (float moduleDefference)
+{
+  float    minimal_ =10000;
+//  uint16_t module_;
+  float cellVoltage_;  // Среднее напряжение на конденсаторе. Устанавливается в разряжаемых модулях.
+  float moduleVoltage_;
+
+  //  Поик минимального напряжения модуля
+  for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
+    if ( (*_i).second->getTotalVoltage() < minimal_){
+      minimal_ = (*_i).second->getTotalVoltage();
+    }
+  }
+
+  // Напряжение ограничения на ячейке
+  cellVoltage_ = (minimal_ + moduleDefference)/NCELLS;
+  
+  // Поиск модулей, напряжение которых выше минимального на moduleDefference вольт. И включение их разряда.
+  for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
+    moduleVoltage_ = (*_i).second->getTotalVoltage();
+    printf("BMS %d",(*_i).first);
+    if ( (moduleVoltage_ - minimal_) > moduleDefference ){
+      (*_i).second->dischargeControl(cellVoltage_);
+      printf(" disch cell.    Module= %f, Different= %f, Cell Limit= %f\n",moduleVoltage_ ,(moduleVoltage_ - minimal_), cellVoltage_);
+    }
+      else{
+        printf(" No disch cell. Module = %f V\n", moduleVoltage_); 
+        (*_i).second->dischargeControl( (*_i).second->getMaxCellVoltage() );
+      }
+      
+  }
 }
 
 //-------------------------------------------------------------------------------------
@@ -833,11 +877,15 @@ void BmsAssembly::startCellVoltageMeasurement (void)
 uint16_t BmsAssembly::readCellVoltage (void)
 {
   uint16_t result_ =0;
+  float totalVoltage_ =0;
+
   for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
     if ((*_i).second->readCellVoltage() == pdFALSE){
       result_ |= 1<<(*_i).first;
     }
+    totalVoltage_ += (*_i).second->getTotalVoltage();
   }
+  _totalVoltage = totalVoltage_;
   return result_;
 }
 

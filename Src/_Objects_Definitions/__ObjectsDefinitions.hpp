@@ -20,6 +20,7 @@
 #include "..\_SPI_Port_PIC\__SPI_Port_PIC.hpp"
 #include "..\_BMS\__BMS.hpp"
 #include "..\_MRAM\__Mram.hpp"
+#include "..\Charger\DcBus\__DcBus.hpp"
 #include "__ConstantsDefinitions.hpp"
 
 using namespace src;
@@ -60,10 +61,15 @@ using namespace src;
   // SPI порты на микроконтроллере PIC
 //  extern SpiPortPic spiPortPic6, spiPortPic8;
 
-  //  Контейнер настроечных объектов - параметров
+  // Абстракция Charger
+  // Dc-Шина
+  extern DcBus dcBus;
+
+//------------------------------------------------------------------------
+//  Контейнер настроечных объектов - параметров
   extern ContainerOfVariables containerOfVariables;
 
-  // Настроечные параметры ШИМ
+// Настроечные параметры ШИМ
   extern ParameterFlt  pwmDeathTime, pwmValue;
 
   // Напряжение на шине постоянного тока
@@ -88,6 +94,7 @@ using namespace src;
 //----------------------------------------------------------------------------------------------------------
 //  Объекты FreeRTOS
   extern osMessageQId queueRc; /* bugfix - queueRc сделать членом объекта*/  //, queuePicDelay;
+//  extern osMessageQId queueDcBus; /* bugfix - queueDcBus сделать членом объекта*/
 //  extern osSemaphoreId binarySemSpiDelayOlegMode;
   extern osSemaphoreId binarySemTSK5mls;
   extern osSemaphoreId binarySemTSK500mls;

@@ -12,11 +12,17 @@
 
 
 #include "stdint.h"
+#include "cmsis_os.h"
 
 using namespace std;
 
 namespace src{	 
 
+  /// Набор возможных команд DC-шине
+  enum DcBusCommands { DISCONNECT,  ///<  Отключить DC-шину
+                       CONNECT,     ///<  Подкючить DC-шину
+                       COMMAND1 };  ///<  Команда 1
+  
   //-------------------------------------------------------------------------------------
   //  Абстракция DC-шины
   //  Публичный метод connect() - подключить НО-НЗ к шине постоянного тока ( задействует алгоритмы заряда емкости, проверки шунтирования в приводе и тп )
@@ -25,9 +31,19 @@ namespace src{
 class DcBus{
   public:
     DcBus()
-      { }
-    void connect (void);
-    void disconnect (void);
+      {
+        osMessageQDef(QueueDcBus, 16, DcBusCommands);
+        _queueDcBus = osMessageCreate(osMessageQ(QueueDcBus), NULL);
+      }
+
+    ~DcBus()
+      {
+        vQueueDelete(_queueDcBus);
+      }
+
+    void           activate      (bool state);
+    inline osMessageQId   retQueueDcBus (void)        { return _queueDcBus; }     ///< Возвращает очередь
+
 
   private:
 
@@ -40,6 +56,9 @@ class DcBus{
     
     void setHeaterState (bool state); // Управление нагревателем
     bool getHeaterState (void);
+  
+    osMessageQId _queueDcBus;
+
   
 };
   

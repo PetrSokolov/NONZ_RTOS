@@ -692,6 +692,11 @@
               <FileType>8</FileType>
               <FilePath>..\Src\_Tasks\Task5mls.cpp</FilePath>
             </File>
+            <File>
+              <FileName>TSKDcBus.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Src\_Tasks\TSKDcBus.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

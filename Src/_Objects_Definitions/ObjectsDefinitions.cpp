@@ -157,7 +157,18 @@ ParameterFlt  pwmDeathTime( 200,                    // _id        - Иденти
                       100,                // _max       - Максимальное значение
                       1,                  // _user      - Доступ в режиме пользователя
                       100,                // _def       - Значение по умолчанию
-                      0);                 // _power     - Степень
+                      0),                 // _power     - Степень
+               vDcBusLoadVoltageDifferent( 206,   // _id        - Идентификатор параметра. Для привязки к FRAM
+                      (char *)"B.7",              // _menu      - Идентификатор меню.
+                      (char *)"Тест шунтирования в источнике. Допустимая разница напряжения",   //_text      - Тестовая информация
+                      255,                // _modbusAdr	- Адрес модбас
+                      30,                 // _value     - Значение параметра
+                      1,                  // _rw        - Разрешение на запись
+                      0,                  // _min       - Минимальное значение
+                      300,                // _max       - Максимальное значение
+                      1,                  // _user      - Доступ в режиме пользователя
+                      30,                // _def       - Значение по умолчанию
+                      -1);                 // _power     - Степень
 
 
 // Калибровочные параметры
@@ -248,7 +259,7 @@ DecoratorFltCalibrated vUDcBusCodeUCal (900,
   //  Менеджер меню
   MainMenu mainMenu;
   
-  //  Движок меню.
+  //  Контроллер(движок) меню.
 //  MenuEngine menuEngine(&containerOfVariables);
 
   //  Обработчик отображения на индикаторе. Агрегирует по интерфейсу IDisplayed объект, который надо отображать
@@ -284,7 +295,7 @@ DecoratorFltCalibrated vUDcBusCodeUCal (900,
   
   // Абстракция Charger
   // Dc-Шина
-  DcBus dcBus;
+  DcBus dcBus(&uDcBusSensor, &vDcBusLoadVoltageDifferent);
   
   // SPI порты на микроконтроллере PIC
 //  SpiPortPic spiPortPic6(6, 0, 700, &spi2Handler, 0xFF, 0xFF, 0x00, 0x00),

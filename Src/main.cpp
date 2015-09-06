@@ -147,6 +147,16 @@ int main(void)
 //------------------------------------------------------------------------------
   menuEngine.setMenuValue("");
  
+// Затычка на время отсутствия FRAM. Инициализация float данных
+
+  vICalibrating.setValue(vICalibrating.getValue());
+  vUDcBusCodeUCal.setValue(vUDcBusCodeUCal.getValue());
+  vUDcBusCodeZero.setValue(vUDcBusCodeZero.getValue());
+  vIChargeCodeICal.setValue(vIChargeCodeICal.getValue());
+  vUChargeCodeUCal.setValue(vUChargeCodeUCal.getValue());
+  vIChargeCodeZero.setValue(vIChargeCodeZero.getValue());
+  vUChargeCodeZero.setValue(vUChargeCodeZero.getValue());
+  vDcBusLoadVoltageDifferent.setValue(vDcBusLoadVoltageDifferent.getValue());
 
   /* USER CODE END 2 */
 

@@ -62,19 +62,6 @@ void StartTask500mls(void const * argument)
     // Задержка на преобразования ADC
     osDelay(20);
 
-  
-// Затычка на время отсутствия FRAM. Инициализация float данных
-
-  vICalibrating.setValue(vICalibrating.getValue());
-
-  vUDcBusCodeUCal.setValue(vUDcBusCodeUCal.getValue());
-  vUDcBusCodeZero.setValue(vUDcBusCodeZero.getValue());
-  vIChargeCodeICal.setValue(vIChargeCodeICal.getValue());
-  vUChargeCodeUCal.setValue(vUChargeCodeUCal.getValue());
-  vIChargeCodeZero.setValue(vIChargeCodeZero.getValue());
-  vUChargeCodeZero.setValue(vUChargeCodeZero.getValue());
-  
-  
 
   for(;;)
   {
@@ -119,7 +106,7 @@ void StartTask500mls(void const * argument)
     if (offPwm) {  pwm.stop(); offPwm =0; }
     
     bmsAssembly.balanceControl(0.05);
-    if (bmsAssembly.getTotalVoltage() < 310.0){
+    if (bmsAssembly.getTotalVoltage() < (float)310.0){
       bmsAssembly.balanceIntermoduleControl(0.3);
     }
       else{
@@ -127,7 +114,7 @@ void StartTask500mls(void const * argument)
       }
 
     osSemaphoreRelease(binarySemTSK1000mls);
-    osMessagePut(dcBus.retQueueDcBus(), CONNECT, 0);
+
 
 //    bms0.bypassControl(0xAA);
 //    bms0.dischargeControl(0xAA);

@@ -44,7 +44,7 @@ namespace src{
 /**
   \brief Класс, описывающий работу с MRAM памятью
 
-  В классе представлены основные команды и методы для работы с микросхемой MR25H256.
+  В классе представлен интерфейс для работы с микросхемой MR25H256.
 */
 class Mram{
   public:
@@ -60,6 +60,11 @@ class Mram{
        _spiMode      = spiMode;
        _spiFrequency = spiFrequency;
        _spiHandler   = spiHandler;
+       
+       // Бинарный семафор. Упорядочивает доступ к MRAM
+       osSemaphoreDef(Sem);
+       _binarySem = osSemaphoreCreate(osSemaphore(Sem), 1);
+
      }
 
 //  private:
@@ -67,8 +72,8 @@ class Mram{
     void writeDisable(void);       /*!< \brief Запретить запись */
     void readStatusRegister(void); /*!< \brief Прочитать регистр статуса */
     void writeStatusRegister(uint8_t statusRegister);/*!< \brief Записать регистр статуса \param[in] statusRegister Записываемое значение регистра*/
-    void readDataBytes(void);      /*!< \brief Прочитать данные */
-    void writeDataBytes(void);     /*!< \brief Записать данные */
+    bool readDataBytes (uint16_t memoryAdres, uint16_t* data, uint16_t size);     /*!< \brief Прочитать данные */
+    bool writeDataBytes(uint16_t memoryAdres, uint16_t* data, uint16_t size);     /*!< \brief Записать данные */
     void enterSleepMode(void);     /*!< \brief Включить энергосберегающий режим */
     void exitSleepMode(void);      /*!< \brief Выключить энергосберегающий режим */
     void setWriteProtect(void);    /*!< \brief Установить запрет на запись ножкой /WP \warning В зависимости от проекта обозначить в реализации GPIO*/ 
@@ -79,6 +84,7 @@ class Mram{
     SpiMode          _spiMode;       ///<  Режим SPI
     uint16_t         _spiFrequency;  ///<  Частота SPI
     uint8_t          _statusRegister;///<  Регистр статуса
+    osSemaphoreId    _binarySem;     ///<  Упорядочивает доступ к MRAM
 };
   
 /**

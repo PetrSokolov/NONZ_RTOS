@@ -13,6 +13,7 @@
 
 #include "stdint.h"
 #include "cmsis_os.h"
+#include "..\..\_AnalogSensors\__AnalogSensors.hpp"
 
 using namespace std;
 
@@ -30,15 +31,18 @@ namespace src{
   //-------------------------------------------------------------------------------------
 class DcBus{
   public:
-    DcBus()
+    DcBus(AnalogDcRmsSensor* uDcBusSensor, IVariable* dcBusLoadVoltageDifferent)
       {
+        _uDcBusSensor = uDcBusSensor;
+        _dcBusLoadVoltageDifferent = dcBusLoadVoltageDifferent;
+        
         osMessageQDef(QueueDcBus, 16, DcBusCommands);
-        _queueDcBus = osMessageCreate(osMessageQ(QueueDcBus), NULL);
+        _queueDcBus = osMessageCreate(osMessageQ(QueueDcBus), NULL); Проверить корректность создания. Как соотносятся _queueDcBus и ##QueueDcBus
       }
 
     ~DcBus()
       {
-        vQueueDelete(_queueDcBus);
+        vQueueDelete(_queueDcBus); Проверить корректность удаления. Так как создавал через cmsis, а удаляю напрямую
       }
 
     void           activate      (bool state);
@@ -54,10 +58,13 @@ class DcBus{
     void setInverterSwitch (bool state);  // Подключение инвертора к DC-шине
     bool getInverterSwitch (void);
     
-    void setHeaterState (bool state); // Управление нагревателем
+    void setHeaterState (bool state);     // Управление нагревателем
     bool getHeaterState (void);
+    bool dcSourceBypassTest(void);        // Проверка шунтирования DC-шины источника
   
-    osMessageQId _queueDcBus;
+    osMessageQId       _queueDcBus;
+    AnalogDcRmsSensor* _uDcBusSensor;
+    IVariable*         _dcBusLoadVoltageDifferent;
 
   
 };

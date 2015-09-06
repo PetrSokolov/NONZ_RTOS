@@ -10,8 +10,8 @@
 #ifndef SPIPORTPIC_HPP
 #define SPIPORTPIC_HPP
 
-#include "stm32f4xx_hal.h"
 #include "stdint.h"
+#include "stm32f4xx_hal.h"
 #include "..\_Interfaces\__ISpiMessage.hpp"
 #include "..\_Interfaces\__ISpiDmaExchange.hpp"
 

@@ -80,6 +80,8 @@ using namespace src;
   // Напряжение и ток калибровки
   extern ParameterInt vUCalibrating;
   extern ParameterFlt vICalibrating;
+  
+  extern ParameterFlt vDcBusLoadVoltageDifferent;
 
   // Калибровочный коэффициент датчика напряжения на шине постоянного тока
   extern DecoratorFltCalibrated vUDcBusCodeUCal;

@@ -35,14 +35,47 @@ using namespace src;
 //-------------------------------------------------------------------------------------
 void DcBus::activate (bool state)
 {
+  float    dcBusVoltage_;       // Текущее напряжение на шине
+  float    dcBusVoltage_1_ =0;  // Предыдущее напряжение на шине
+  float    deltaVoltage_;       // Приращение напряжения на шине 
+  uint16_t connectTimer_ = 600; // Таймер подключения DC-шины. На подключение дается 1 минута, иначе отключение.
+  bool     dcSourceBypass_;     // Результат проверки шунтирования DC-шины источника
+  
   if(state == true){
+    // Подключение шины
     setInverterSwitch(true);
     setBypassSwitch(false);
     setDcBusSwitch(true);
     setDcBusSwitch(true);
-    osDelay(80);  // Задержка на включение реле
+     osDelay(80);  // Задержка на включение реле
+
+    dcBusVoltage_ = _uDcBusSensor->getValue();
+    deltaVoltage_ = dcBusVoltage_ - dcBusVoltage_1_;
+    
+    // Ожинание заряда конденсатора инвертора
+    while((dcBusVoltage_ < (float)100.0 || deltaVoltage_ > (float)2.0) && connectTimer_ != 0 ){
+      osDelay(100);
+      dcBusVoltage_ = _uDcBusSensor->getValue();
+      deltaVoltage_ = dcBusVoltage_ - dcBusVoltage_1_;
+      dcBusVoltage_1_ = dcBusVoltage_;
+      connectTimer_--;
+    }
+    
+    // Проверка шунтирования DC-шины источника
+    dcSourceBypass_ = dcSourceBypassTest();
+    
+    if (connectTimer_ == 0 || dcSourceBypass_ == false){
+      // Отключение DC-шины
+      osMessagePut(dcBus.retQueueDcBus(), DISCONNECT, 0);
+    }
+      else{
+        // Конденсатор заряжен. Шунтирование зарядного резистора
+        setBypassSwitch(true);
+      }
+
     
   }
+    // Отключение шины
     else{
       setInverterSwitch(false);
       setBypassSwitch(false);
@@ -134,5 +167,22 @@ bool DcBus::getHeaterState (void)
   }
     else{ return false; }
 }
+
 //-------------------------------------------------------------------------------------
+// Проверка шунтирования DC-шины источника
+bool DcBus::dcSourceBypassTest(void)
+{
+  float dcBusVoltage_;
+  float dcBusVoltage_1_;
+  
+  dcBusVoltage_1_ = _uDcBusSensor->getValue();
+  setHeaterState(true);
+  osDelay(2000);
+  dcBusVoltage_ = _uDcBusSensor->getValue();
+  setHeaterState(false);
+  if((dcBusVoltage_1_ - dcBusVoltage_) > _dcBusLoadVoltageDifferent->getValueFlt()){
+    return false;
+  }
+    else return true;
+}
 

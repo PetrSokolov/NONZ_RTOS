@@ -697,6 +697,11 @@
               <FileType>8</FileType>
               <FilePath>..\Src\_Tasks\TSKDcBus.cpp</FilePath>
             </File>
+            <File>
+              <FileName>TSKByteStorage.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Src\_Tasks\TSKByteStorage.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -841,6 +846,11 @@
               <FileName>Mram.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\Src\_MRAM\Mram.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>ByteStorageController.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\Src\ByteStorage\ByteStorageController.cpp</FilePath>
             </File>
           </Files>
         </Group>

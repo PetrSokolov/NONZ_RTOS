@@ -33,7 +33,7 @@ using namespace src;
 //-------------------------------------------------------------------------------------
 //  Публичные методы
 //-------------------------------------------------------------------------------------
-void DcBus::activate (bool state)
+bool DcBus::activate (bool state)
 {
   float    dcBusVoltage_;       // Текущее напряжение на шине
   float    dcBusVoltage_1_ =0;  // Предыдущее напряжение на шине
@@ -66,11 +66,16 @@ void DcBus::activate (bool state)
     
     if (connectTimer_ == 0 || dcSourceBypass_ == false){
       // Отключение DC-шины
-      osMessagePut(dcBus.retQueueDcBus(), DISCONNECT, 0);
+//      setCommand(DISCONNECT);
+      setInverterSwitch(false);
+      setBypassSwitch(false);
+      setDcBusSwitch(false);
+      return false;
     }
       else{
         // Конденсатор заряжен. Шунтирование зарядного резистора
         setBypassSwitch(true);
+        return true;
       }
 
     
@@ -80,10 +85,8 @@ void DcBus::activate (bool state)
       setInverterSwitch(false);
       setBypassSwitch(false);
       setDcBusSwitch(false);
+      return false;
     }
-  
-  
-  
 }
 
 

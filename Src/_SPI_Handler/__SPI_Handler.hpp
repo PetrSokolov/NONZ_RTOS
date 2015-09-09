@@ -12,7 +12,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "stdint.h"
-#include <list>
+//#include <list>
 //#include "..\_Interfaces\__ISpiMessage.hpp"
 #include "..\_Interfaces\__ISpiDmaExchange.hpp"
 
@@ -98,7 +98,7 @@ class SpiHandler : public ISpiDmaExchange{
     osSemaphoreId      _binarySemOlegMode; ///<  Бинарный семафор. Обеспечивает задержку между байтами в режиме "Олег"
 };
 
-//---------------------------------------------------------------------------------------------------------------------------4
+//---------------------------------------------------------------------------------------------------------------------------
 // 
   class Spi2Handler : public SpiHandler{
   public:

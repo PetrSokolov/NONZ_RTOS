@@ -13,6 +13,7 @@
 
 #include "stdint.h"
 #include <list>
+#include "..\_Interfaces\__IByteStorage.hpp"
 #include "..\_Interfaces\__ISpiMessage.hpp"
 #include "..\_Interfaces\__ISpiDmaExchange.hpp"
 #include "..\_Objects_Definitions\__ConstantsDefinitions.hpp"
@@ -46,7 +47,7 @@ namespace src{
 
   В классе представлен интерфейс для работы с микросхемой MR25H256.
 */
-class Mram{
+class Mram : public IByteStorage{
   public:
 /** \brief Конструктор 
     \param[in] chipSelect   Номер устройства на шине SPI
@@ -64,16 +65,24 @@ class Mram{
        // Бинарный семафор. Упорядочивает доступ к MRAM
        osSemaphoreDef(Sem);
        _binarySem = osSemaphoreCreate(osSemaphore(Sem), 1);
-
      }
 
-//  private:
+    ~Mram()
+      {
+        osSemaphoreDelete (_binarySem);
+      }
+
+    // Методы интерфейса IByteStorage
+    virtual void readBytes (uint32_t storageAdres, uint16_t* bufer, uint16_t size);	 ///< Чтение
+    virtual void writeBytes(uint32_t storageAdres, uint16_t* bufer, uint16_t size);  ///< Запись
+      
+  private:
     void writeEnable(void);        /*!< \brief Разрешить запись */
     void writeDisable(void);       /*!< \brief Запретить запись */
     void readStatusRegister(void); /*!< \brief Прочитать регистр статуса */
     void writeStatusRegister(uint8_t statusRegister);/*!< \brief Записать регистр статуса \param[in] statusRegister Записываемое значение регистра*/
-    bool readDataBytes (uint16_t memoryAdres, uint16_t* data, uint16_t size);     /*!< \brief Прочитать данные */
-    bool writeDataBytes(uint16_t memoryAdres, uint16_t* data, uint16_t size);     /*!< \brief Записать данные */
+    bool readDataBytes (uint32_t memoryAdres, uint16_t* data, uint16_t size);     /*!< \brief Прочитать данные */
+    bool writeDataBytes(uint32_t memoryAdres, uint16_t* data, uint16_t size);     /*!< \brief Записать данные */
     void enterSleepMode(void);     /*!< \brief Включить энергосберегающий режим */
     void exitSleepMode(void);      /*!< \brief Выключить энергосберегающий режим */
     void setWriteProtect(void);    /*!< \brief Установить запрет на запись ножкой /WP \warning В зависимости от проекта обозначить в реализации GPIO*/ 

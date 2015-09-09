@@ -276,6 +276,9 @@ DecoratorFltCalibrated vUDcBusCodeUCal (900,
 //  Mram(uint8_t chipSelect, SpiMode spiMode, uint16_t spiFrequency, ISpiDmaExchange* spiHandler)
   Mram mram(CS_MRAM, SPI_MODE_0, 1000, &spi2Handler);
   
+  // Хранилище. Может включать MRAM, FLASH , SD и тп
+  ByteStorageController byteStorageController (&mram);
+  
   // Модули БМС (0-10)
   //Bms(chipSelect, chipAdres, spiModeLTC, spiModePort, spiFrequency, spiPortFrequency, *spiHandler, *spiPortHandler)
 

@@ -112,7 +112,16 @@ void StartTask500mls(void const * argument)
       else{
         bmsAssembly.dischargeControl(310.0);
       }
+    uint16_t bufer[10] = {0,1,2,3,4,5,6,7,8,9};
+    ByteStoragePacket packet(bufer, 5, 0, ACTION_READ);
+     osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
 
+    printf("Byte Storage Packet send in BSController\n");
+    byteStorageController.transferPacket(&packet);
+    printf("Byte Storage Packet waiting semaphore\n");
+     osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
+
+      
     osSemaphoreRelease(binarySemTSK1000mls);
 
 

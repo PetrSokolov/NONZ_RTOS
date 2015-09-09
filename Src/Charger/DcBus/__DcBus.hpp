@@ -26,8 +26,8 @@ namespace src{
   
   //-------------------------------------------------------------------------------------
   //  Абстракция DC-шины
-  //  Публичный метод connect() - подключить НО-НЗ к шине постоянного тока ( задействует алгоритмы заряда емкости, проверки шунтирования в приводе и тп )
-  //  Публичный метод disconnect() - отключить НО-НЗ от шины постоянного тока
+  //  Публичный метод activate() - подключить/отключить НО-НЗ к шине постоянного тока ( задействует алгоритмы заряда емкости, проверки шунтирования в приводе и тп )
+                       //  Команды управления передаются через очередь. Обработка - в отдельной задаче.
   //-------------------------------------------------------------------------------------
 class DcBus{
   public:
@@ -36,17 +36,20 @@ class DcBus{
         _uDcBusSensor = uDcBusSensor;
         _dcBusLoadVoltageDifferent = dcBusLoadVoltageDifferent;
         
-        osMessageQDef(QueueDcBus, 16, DcBusCommands);
-        _queueDcBus = osMessageCreate(osMessageQ(QueueDcBus), NULL); Проверить корректность создания. Как соотносятся _queueDcBus и ##QueueDcBus
+        //osMessageQDef(QueueDcBus, 16, DcBusCommands);
+//        _queueDcBus = osMessageCreate(osMessageQ(QueueDcBus), NULL);// Проверить корректность создания. Как соотносятся _queueDcBus и ##QueueDcBus
+        _queueDcBus = xQueueCreate(16, sizeof(uint16_t));
       }
 
     ~DcBus()
       {
-        vQueueDelete(_queueDcBus); Проверить корректность удаления. Так как создавал через cmsis, а удаляю напрямую
+        vQueueDelete(_queueDcBus);// Проверить корректность удаления. Так как создавал через cmsis, а удаляю напрямую
       }
 
-    void           activate      (bool state);
-    inline osMessageQId   retQueueDcBus (void)        { return _queueDcBus; }     ///< Возвращает очередь
+    bool                  activate      (bool state);
+    inline xQueueHandle   retQueueDcBus (void)        { return _queueDcBus; }     ///< Возвращает очередь
+    inline portBASE_TYPE  setCommand (DcBusCommands command)    { return xQueueSendToBack(retQueueDcBus(), &command, 0); }
+    
 
 
   private:
@@ -62,10 +65,10 @@ class DcBus{
     bool getHeaterState (void);
     bool dcSourceBypassTest(void);        // Проверка шунтирования DC-шины источника
   
-    osMessageQId       _queueDcBus;
+//    DcBusCommands      _command;
+    xQueueHandle       _queueDcBus;
     AnalogDcRmsSensor* _uDcBusSensor;
     IVariable*         _dcBusLoadVoltageDifferent;
-
   
 };
   

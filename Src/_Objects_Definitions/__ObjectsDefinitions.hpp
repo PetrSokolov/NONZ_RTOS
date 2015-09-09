@@ -21,7 +21,9 @@
 #include "..\_BMS\__BMS.hpp"
 #include "..\_MRAM\__Mram.hpp"
 #include "..\Charger\DcBus\__DcBus.hpp"
+#include "..\ByteStorage\__ByteStorageController.hpp"
 #include "__ConstantsDefinitions.hpp"
+
 
 using namespace src;
 
@@ -54,6 +56,9 @@ using namespace src;
   // Энергонезависимая память MRAM
   extern Mram mram;
   
+  // Хранилище. Может включать MRAM, FLASH , SD и тп
+  extern ByteStorageController byteStorageController;
+
   // Модули БМС (0-10)
   extern Bms bms0, bms1, bms2, bms3, bms4, bms5, bms6, bms7, bms8, bms9, bms10;
   extern BmsAssembly bmsAssembly;  // Объект-контейнер, объединяющий все модули BMS

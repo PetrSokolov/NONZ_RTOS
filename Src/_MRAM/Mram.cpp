@@ -15,6 +15,19 @@
 
 using namespace src;
 
+// Методы интерфейса IByteStorage
+//-------------------------------------------------------------------------------------
+void Mram::readBytes (uint32_t storageAdres, uint16_t* bufer, uint16_t size)
+{
+  readDataBytes(storageAdres, bufer, size);
+}
+
+//-------------------------------------------------------------------------------------
+void Mram::writeBytes(uint32_t storageAdres, uint16_t* bufer, uint16_t size)
+{
+  writeDataBytes(storageAdres, bufer, size);
+}
+
 //-------------------------------------------------------------------------------------
 /* Разрешить запись */
 //The Write Enable (WREN) command sets the Write Enable Latch (WEL) bit in the status register to 1. The
@@ -70,35 +83,47 @@ void Mram::writeStatusRegister(uint8_t statusRegister)
 }
 //-------------------------------------------------------------------------------------
 /* Прочитать данные */
-bool Mram::readDataBytes(uint16_t memoryAdres, uint16_t* data, uint16_t size)      
+// добавить CRC
+bool Mram::readDataBytes(uint32_t memoryAdres, uint16_t* data, uint16_t size)
 {
- SpiPacket packet(3, 8, _chipSelect, _spiMode, MODE_8BIT1_OTHER16BIT, _spiFrequency);
+ SpiPacket packet(3, size, _chipSelect, _spiMode, MODE_8BIT1_OTHER16BIT, _spiFrequency);
   
   osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
-  packet.putTxByte (READ);  // READ MRAM
-  packet.putTxByte (0x00);   // ADR
-  packet.putTxByte (0x00);   // ADR
+  packet.putTxByte (READ);                       // READ MRAM
+  packet.putTxByte ((memoryAdres & 0xFF00)>>8);  // ADR
+  packet.putTxByte (memoryAdres & 0xFF);         // ADR
   _spiHandler->transferMessage(&packet);
   // Ожидание конца передачи
   osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
-  packet.putTxByte (0x00);   // ADR
+  
+  // DATA
+  for(uint16_t index=0; index<size; index++){
+    data[0] = ((uint16_t)packet.getPointerToRecievedBytes()[2*index]<<8)|packet.getPointerToRecievedBytes()[2*index+1];
+    data++;
+  }
+
   return true;
 }
 //-------------------------------------------------------------------------------------
 /* Записать данные */
-bool Mram::writeDataBytes(uint16_t memoryAdres, uint16_t* data, uint16_t size)
+bool Mram::writeDataBytes(uint32_t memoryAdres, uint16_t* data, uint16_t size)
 {
- SpiPacket packet(1+2+4, 0, _chipSelect, _spiMode, MODE_8BIT1_OTHER16BIT, _spiFrequency);
+ SpiPacket packet(1+2+size*2, 0, _chipSelect, _spiMode, MODE_8BIT1_OTHER16BIT, _spiFrequency);
   
   osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
-  packet.putTxByte (WRITE);  // READ MRAM
-  packet.putTxByte (0x00);   // ADR
-  packet.putTxByte (0x00);   // ADR
-  packet.putTxByte (0x01);   // DATA
-  packet.putTxByte (0x02);   // DATA
-  packet.putTxByte (0x03);   // DATA
-  packet.putTxByte (0x04);   // DATA
+  packet.putTxByte (WRITE);                      // READ MRAM
+  packet.putTxByte ((memoryAdres & 0xFF00)>>8);  // ADR
+  packet.putTxByte (memoryAdres & 0xFF);         // ADR
+
+  // DATA
+  for(uint16_t index=0; index<size; size++){
+    packet.putTxByte ((*data)>>8);
+    packet.putTxByte (*data & 0xFF);
+    data++;
+  }
+
   _spiHandler->transferMessage(&packet);
+
   // Ожидание конца передачи
   osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
   return true;

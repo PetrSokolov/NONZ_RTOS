@@ -50,6 +50,8 @@ osThreadId Task5mlsHandle;
 osThreadId TaskRCHandle;
 osThreadId TaskSpi1Handle;
 osThreadId TaskSpi2Handle;
+osThreadId TaskDcBusHandle;
+osThreadId TaskStCtrlHandle;
 osMessageQId queueRc;
 //osMessageQId queueDcBus;
 
@@ -80,6 +82,7 @@ void StartTaskRC(void const * argument);
 void StartTaskSpi1(void const * argument);
 void StartTaskSpi2(void const * argument);
 void StartTaskDcBus(void const * argument);
+void StartTaskStCtrl(void const * argument);
 void Timer5mlsCallback(void const * argument);
 void Timer500mlsCallback(void const * argument);
 void Timer1000mlsCallback(void const * argument);
@@ -219,29 +222,33 @@ void MX_FREERTOS_Init(void) {
 
 /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  osThreadDef(Task500mls, StartTask500mls, osPriorityNormal, 0, 512);
+  osThreadDef(Task500mls, StartTask500mls, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
   Task500mlsHandle = osThreadCreate(osThread(Task500mls), NULL);
 
   /* definition and creation of Task1 */
-  osThreadDef(Task1000mls, StartTask1000mls, osPriorityNormal, 0, 512);
+  osThreadDef(Task1000mls, StartTask1000mls, osPriorityNormal, 0, 256);
   Task1000mlsHandle = osThreadCreate(osThread(Task1000mls), NULL);
 
   /* definition and creation of Task_2 */
-  osThreadDef(Task5mls, StartTask5mls, osPriorityNormal, 0, 256);
+  osThreadDef(Task5mls, StartTask5mls, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
   Task5mlsHandle = osThreadCreate(osThread(Task5mls), NULL);
 
   /* definition and creation of Task03 */
-  osThreadDef(TaskRC, StartTaskRC, osPriorityLow, 0, 256);
+  osThreadDef(TaskRC, StartTaskRC, osPriorityLow, 0, configMINIMAL_STACK_SIZE);
   TaskRCHandle = osThreadCreate(osThread(TaskRC), NULL);
 
-  osThreadDef(TaskSpi1, StartTaskSpi1, osPriorityNormal, 0, 256);
+  osThreadDef(TaskSpi1, StartTaskSpi1, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
   TaskSpi1Handle = osThreadCreate(osThread(TaskSpi1), NULL);
 
-  osThreadDef(TaskSpi2, StartTaskSpi2, osPriorityNormal, 0, 256);
+  osThreadDef(TaskSpi2, StartTaskSpi2, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
   TaskSpi2Handle = osThreadCreate(osThread(TaskSpi2), NULL);
 
-  osThreadDef(TaskDcBus, StartTaskDcBus, osPriorityNormal, 0, 256);
-  TaskSpi2Handle = osThreadCreate(osThread(TaskDcBus), NULL);
+  osThreadDef(TaskDcBus, StartTaskDcBus, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  TaskDcBusHandle = osThreadCreate(osThread(TaskDcBus), NULL);
+  
+  osThreadDef(TaskStCtrl, StartTaskStCtrl, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  TaskStCtrlHandle = osThreadCreate(osThread(TaskStCtrl), NULL);
+  
   /* USER CODE END RTOS_THREADS */
 
 

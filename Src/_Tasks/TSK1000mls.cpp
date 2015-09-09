@@ -41,23 +41,17 @@ void StartTask1000mls(void const * argument)
     
     osSemaphoreWait(binarySemTSK1000mls, osWaitForever);
     
-    //pwmval += 0.01;
+    
     pwmval =0.5;
-//    if (pwmval>0.8) {pwmval = 0.1;}
     pwm.setValue(pwmval);
-//    printf("1000mls\n");
-//    printf("Size of variables %d\n", containerOfVariables.getCountOfContents());
-//    printf("id 202 =  %d\n", containerOfVariables.getContent(202)->getValue());
 
     //ITMLOG 1 >D:\BMS3_2A.csv   
-/*    p3 = (numbers-6-90*2)/3;       if (p3<0) p3=0;
-    p2 = (numbers - p3*3 - 6)/2;   if (p2<0) p2=0;
-    p1 = (numbers - p3*3 - p2*2);
+//    printf("FreeHeapSize = %d\n", xPortGetFreeHeapSize());
+//    printf("MinimumEverFreeHeapSize = %d\n", xPortGetMinimumEverFreeHeapSize());
+//    printf("%s High Watermark = %d\n", pcTaskGetTaskName(Task1000mlsHandle), uxTaskGetStackHighWaterMark(Task1000mlsHandle));
+//    printf("Process...\n");
+    
 
-    printf("numbers of Digits = %d,\n", numbers);
-    printf("p1 = %d, p2 = %d, p3 = %d\n", p1, p2, p3);
-    printf("Totel Pages = %d\n\n", 3+p1+p2+p3);
-*/    
    timeCharge++;
    bms = &bms1;
    bmsNr =0;
@@ -115,7 +109,6 @@ bms12Voltage = 0;
        ITM_SendCharX (bmsNr+2, '\n');
 //       osDelay(1);
      }
-
   }
 }
 

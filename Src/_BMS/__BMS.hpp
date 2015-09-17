@@ -111,7 +111,7 @@ class Bms{
                                                          //  Суммарное напряжение модуля. Для ускорения обработки сделано инлайном без цикла
     inline float    getTotalVoltage             (void)      { return _totalVoltage; }//_cellVoltage[0]+_cellVoltage[1]+_cellVoltage[2]+_cellVoltage[3]+_cellVoltage[4]+_cellVoltage[5]+_cellVoltage[6]+_cellVoltage[7]+_cellVoltage[8]+_cellVoltage[9]+_cellVoltage[10]+_cellVoltage[11]; }
     inline float    getMaxCellVoltage           (void)  { return _maxCellVoltage; }
-           void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
+           void     balanceControl              (float refVoltage, float cellDefference); //  Управление балансировкой. refVoltage - опорное напряжение на ячейке. cellDefference - разница напряжения, после которой включается балансировка ячейки
     //  PIC
            void     dischargeControl            (float maxCellVoltage);  // Управление разрядом. 
            void     bypassControl               (uint16_t  data);       // Управление шунтированием
@@ -178,6 +178,9 @@ class Bms{
 
 class BmsAssembly{
   public:
+           BmsAssembly() { _size =0; }
+           ~BmsAssembly() {}
+             
            void     addModule                   (Bms* module);               //  Добавить модуль в карту
            uint16_t getModule                   (uint16_t id, Bms*& module );//  Установить указатель на модуль из карты
 //    uint16_t getModule                   (uint16_t id, Bms*& module );//  Установить указатель на модуль из карты
@@ -191,9 +194,10 @@ class BmsAssembly{
            uint16_t readFlagRegisters           (void);  //  Read Flag Register Group
            float    getCellVoltage              (uint16_t module, uint8_t cell);
     inline float    getTotalVoltage             (void)  { return _totalVoltage; } // Суммарное напряжение всех модулей
-           void     balanceControl              (float  cellDefference); // Управление балансировкой. Значение разницы напряжений
+           void     balanceControl              (float refVoltage, float cellDefference); //  Управление балансировкой. refVoltage - опорное напряжение на ячейке. cellDefference - разница напряжения, после которой включается балансировка ячейки
+    inline uint16_t getsize                     (void)  { return _size; }   // Количество BMS модулей в системе
     //  PIC
-           void     dischargeControl            (float maxTotalVoltage);  // Управление разрядом. 
+           void     dischargeControl            (float maxCellVoltage);  // Управление разрядом. 
            void     bypassControl               (uint16_t  data);         // Управление шунтированием
            void     balanceIntermoduleControl   (float moduleDefference); // Управление балансировкой. Значение разницы напряжений между модулями
 
@@ -217,7 +221,8 @@ class BmsAssembly{
   private:
     map<uint16_t, Bms*>           _bmsModulesMap;
     map<uint16_t, Bms*>::iterator _i;
-    float                         _totalVoltage;  // Суммарное напряжение [В]
+    float                         _totalVoltage;    // Суммарное напряжение [В]
+    uint16_t                      _size;            // Количество BMS модулей в системе
 
     
 };

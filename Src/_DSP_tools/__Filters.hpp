@@ -102,7 +102,7 @@ inline void RmsFilter::putSample		(uint16_t adc_sample)
 {
 	_mean_y_1 = _mean_y_1 + ((float)adc_sample * adc_sample - _mean_y_1)*_tfm;
 	_mean_z_1 = _mean_z_1 + (_mean_y_1 - _mean_z_1)*_tfm;
-	_mean_value = sqrt( _mean_z_1 );
+	_mean_value = sqrt( _mean_z_1 ); // Перенести в getMean /*bugFix*/
 }
 
 

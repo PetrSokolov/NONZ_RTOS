@@ -5,10 +5,7 @@ void StartTaskSpi1(void const * argument)
 {
   for(;;)
   {
-
     spi1Handler.handler();
-
-
   }
 
 

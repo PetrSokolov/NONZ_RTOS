@@ -55,6 +55,7 @@ void SpiHandler::handler (void)
   
   //  Ожидание пакета на передачу
   mesage_ = osMessageGet(_queue, osWaitForever);
+//    printf("TSKspi start\n");
   if (mesage_.status == osEventMessage){
 
     _currentMessage = (ISpiMessage*)mesage_.value.p;
@@ -124,7 +125,7 @@ void SpiHandler::handler (void)
     //  Ожидание завершения работы ресурса (SPI)
     //  Ожидание необходимо, так как DMA использует источник данных (пакет)
     //  Затем отдается семафор пакету, пакет можно удалять.
-    osSemaphoreWait(_binarySem, osWaitForever); //Разобраться, где теряется семафор - разобрался, в прерывании
+    osSemaphoreWait(_binarySem, osWaitForever); 
     
     osSemaphoreRelease(_binarySem);
   
@@ -132,6 +133,8 @@ void SpiHandler::handler (void)
 
     //  Освобождение семафора текущего пакета
     osSemaphoreRelease(_currentMessage->retSetmaphore());
+//    printf("TSKspi %X stop\n\n", _hspi);
+
   }
 }
 
@@ -158,17 +161,6 @@ void SpiHandler::setupDmaDataWidth (uint32_t dataWidth)
   }
   HAL_DMA_Init(_hdma_spi_tx);
   HAL_DMA_Init(_hdma_spi_rx);
-
-/*  HAL_DMA_DeInit(_hdma_spi_tx);
-  _hdma_spi_tx->Init.PeriphDataAlignment = perephDataWidth;
-  _hdma_spi_tx->Init.MemDataAlignment = memoryhDataWidth;
-  HAL_DMA_Init(_hdma_spi_tx);
-
-  HAL_DMA_DeInit(_hdma_spi_rx);
-  _hdma_spi_rx->Init.PeriphDataAlignment = perephDataWidth;
-  _hdma_spi_rx->Init.MemDataAlignment = memoryhDataWidth;
-  HAL_DMA_Init(_hdma_spi_rx);
-*/
 }
 
 //--------------------------------------------------------------------------------------------------------

@@ -449,18 +449,21 @@ uint16_t Bms::readDiagnosticRefMux (void)
 
 //-------------------------------------------------------------------------------------
 //  Управление балансировкой
-void Bms::balanceControl (float  cellDefference)
+//  refVoltage - опорное напряжение на ячейке
+//  cellDefference - разница напряжения, после которой включается балансировка ячейки
+void Bms::balanceControl (float refVoltage, float cellDefference)
 {
   uint16_t data_ =0;
   uint16_t i_;
   uint16_t size_;
-  float minCellVoltage =5;
+  float meanCellVoltage;
+//  float minCellVoltage =5;
   
   size_ = countof(_cellVoltage);
 
   // Находжение минимального напряжения в ячейках
   //
-  for (i_=0; i_<size_; i_++){
+/*  for (i_=0; i_<size_; i_++){
    if (_cellVoltage[i_] < minCellVoltage) {
      minCellVoltage = _cellVoltage[i_]; 
    }
@@ -472,8 +475,17 @@ void Bms::balanceControl (float  cellDefference)
    if (_cellVoltage[i_] - minCellVoltage > cellDefference) {
      data_ |= 1<<i_;
    }
+  }*/
+
+
+  // Поиск ячеек, которые нуждаются в балансировке
+  //
+  for (i_=0; i_<size_; i_++){
+   if (_cellVoltage[i_] - refVoltage > cellDefference) {
+     data_ |= 1<<i_;
+   }
   }
-  
+  data_ = 0xFFF;
   _configRegisterGroup.registers[1]  = data_ & 0xFF;
   _configRegisterGroup.registers[2] &= 0xF0;
   _configRegisterGroup.registers[2] |= (data_ & 0xF00)>>8;
@@ -587,6 +599,7 @@ uint8_t Bms::pec8_calc(uint8_t len, uint8_t *data)
 void BmsAssembly::addModule (Bms* module)
 {
   _bmsModulesMap[module->getChipSelect()] = module;
+  _size = _bmsModulesMap.size();
 }
 
 //  Устанавливает указатель на объект Bms с соответствующим идентификатором
@@ -616,20 +629,21 @@ void BmsAssembly::portInit (void)
 
 
 //-------------------------------------------------------------------------------------
-void BmsAssembly::balanceControl(float  cellDefference)
+//  Управление балансировкой. refVoltage - опорное напряжение на ячейке. cellDefference - разница напряжения, после которой включается балансировка ячейки
+void BmsAssembly::balanceControl(float refVoltage, float cellDefference)
 {
   for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
-    (*_i).second->balanceControl(cellDefference);
+    (*_i).second->balanceControl(refVoltage, cellDefference);
   }
 }
 //-------------------------------------------------------------------------------------
-void BmsAssembly::dischargeControl (float maxTotalVoltage)  // Управление разрядом. 
+void BmsAssembly::dischargeControl (float maxCellVoltage)  // Управление разрядом. 
 {
-  float maxCellVoltage_;
+//  float maxCellVoltage_;
   
-  maxCellVoltage_ = maxTotalVoltage/(_bmsModulesMap.size() * NCELLS);
+//  maxCellVoltage_ = maxTotalVoltage/(_bmsModulesMap.size() * NCELLS);
   for(_i=_bmsModulesMap.begin(); _i!=_bmsModulesMap.end(); _i++){
-    (*_i).second->dischargeControl(maxCellVoltage_);
+    (*_i).second->dischargeControl(maxCellVoltage);
   }
 }
 //-------------------------------------------------------------------------------------

@@ -162,7 +162,8 @@ void DMA2_Stream0_IRQHandler(void)
    if(__HAL_DMA_GET_FLAG(&hdma_spi1_rx, __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_spi1_rx)) != RESET)
    {
      if(__HAL_DMA_GET_IT_SOURCE(&hdma_spi1_rx, DMA_IT_TC) != RESET){
-//       spi1Handler.setRxComplete();
+       // Освобождение ресурса
+       // Заменить на метод класса SpiHandler
        osSemaphoreRelease(spi1Handler.retSetmaphore());
      }
    }
@@ -196,9 +197,9 @@ void DMA1_Stream3_IRQHandler(void)
    if(__HAL_DMA_GET_FLAG(&hdma_spi2_rx, __HAL_DMA_GET_TC_FLAG_INDEX(&hdma_spi2_rx)) != RESET)
    {
      if(__HAL_DMA_GET_IT_SOURCE(&hdma_spi2_rx, DMA_IT_TC) != RESET){
-//       spi2Handler.setRxComplete();
+       // Освобождение ресурса
+       // Заменить на метод класса SpiHandler
        osSemaphoreRelease(spi2Handler.retSetmaphore());
-
      }
    }
 

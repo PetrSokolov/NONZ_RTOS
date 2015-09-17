@@ -15,7 +15,6 @@ void StartTaskRC(void const * argument)
   {
     rc_time = osMessageGet(queueRc, osWaitForever);
     rc.rcDecoder.putSample(rc_time.value.v);
-    
   }
   // USER CODE END StartTask03
 }

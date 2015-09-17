@@ -5,9 +5,7 @@ void StartTaskSpi2(void const * argument)
 {
   for(;;)
   {
-   
     spi2Handler.handler();
-
   }
 
 

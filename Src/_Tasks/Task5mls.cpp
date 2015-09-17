@@ -11,8 +11,6 @@ void StartTask5mls(void const * argument)
   {
     osSemaphoreWait(binarySemTSK5mls, osWaitForever);
     displayLed4Digit.display();
-
-
   }
   /* USER CODE END StartTask_2 */
 }

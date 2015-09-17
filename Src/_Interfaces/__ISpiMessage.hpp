@@ -59,21 +59,26 @@ class SpiPacket : public ISpiMessage{
      {
        _sizeBuferTx = sizeBuferTx;
        _sizeBuferRx = sizeBuferRx;
-       _buferTx = new uint8_t[sizeBuferTx];
-       _buferRx = new uint8_t[sizeBuferTx+sizeBuferRx];
-       _pointerBuferTx = _buferTx;
-       _pointerBuferRx = _buferRx;
        _chipSelect = chipSelect;
        _spiMode = spiMode;
        _transferMode = transferMode;
 	     _spiFrequency = spiFrequency;
        _done = 0;
        _modeOleg = 0;
+       _buferTx = new uint8_t[sizeBuferTx];
+       _buferRx = new uint8_t[sizeBuferTx+sizeBuferRx];
+       _pointerBuferTx = _buferTx;
+       _pointerBuferRx = _buferRx;
        
        // Бинарный семафор. Опреляет доступ к объекту SpiPacket
        osSemaphoreDef(Sem);
        _binarySem = osSemaphoreCreate(osSemaphore(Sem), 1);
-
+       
+       // Проверка выделенной памяти
+       if(_buferTx == NULL || _buferRx == NULL || _binarySem == NULL){
+         _allocateError = true;
+       }
+         else { _allocateError = false; }
      }
     ~SpiPacket ()
      {
@@ -98,7 +103,8 @@ class SpiPacket : public ISpiMessage{
     virtual inline osSemaphoreId  retSetmaphore (void)  { return _binarySem; }                   ///< Возвращяет семафор. Обозначает конец обработки пакета
 
   inline void      putTxByte(uint8_t byte)    { if ((_pointerBuferTx - _buferTx) < _sizeBuferTx)  { *_pointerBuferTx++ = byte; } }    ///< Разместить байт в буфере на передачу
-  inline void      resetBuf(void)    { _pointerBuferTx = _buferTx; _pointerBuferRx = _buferRx; }    ///< Сброс указателей на начало буфера
+  inline void      resetBuf(void)             { _pointerBuferTx = _buferTx; _pointerBuferRx = _buferRx; }    ///< Сброс указателей на начало буфера
+  inline bool      getAllocateError(void)     { return _allocateError; }
     osSemaphoreId _binarySem;
     
   private:
@@ -114,6 +120,7 @@ class SpiPacket : public ISpiMessage{
     uint8_t  _modeOleg;       ///<  Режим "Олег". Между байтами пауза.
     SpiMode  _spiMode;        ///<  Режим SPI (0,1,2,3)
     TransferMode _transferMode;///< Режим передачи. Передача может осуществляться в 8, 16 битном режимах.
+    bool     _allocateError;   ///< Ошибка выделения памяти
 };
 } //src
 

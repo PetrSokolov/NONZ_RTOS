@@ -66,17 +66,20 @@ void StartTask500mls(void const * argument)
   for(;;)
   {
     osSemaphoreWait(binarySemTSK500mls, osWaitForever);
+//    printf("TSK500 start\n");
 
+    // Обработка принятых команд ПДУ
     rc.handler();
+    // Обработка контроллера меню
     menuEngine.handler();
 
-
+    // Обмен информацией с BMS
     bmsAssembly.readConfigRegisterGroup();
     bmsAssembly.readCellVoltage();
     bmsAssembly.readFlagRegisters();
     bmsAssembly.startCellVoltageMeasurement();
     
-    // Чтение датчиков
+    // Инициализация параметров, отображающих в меню значения датчиков напряжения, тока
     vUDcBus.setValue( uDcBusSensor.getValue() );
     vUCharge.setValue( uChargeSensor.getValue() );
     vICharge.setValue( iChargeSensor.getValue() );
@@ -102,17 +105,29 @@ void StartTask500mls(void const * argument)
       vIChargeCodeZero.setAutocalibratingValue(iChargeSensor.getMean());
     }
     
-    if (onPwm) {  pwm.start(); onPwm =0; }
-    if (offPwm) {  pwm.stop(); offPwm =0; }
+//    if (onPwm) {  pwm.start(); onPwm =0; }
+//    if (offPwm) {  pwm.stop(); offPwm =0; }
     
-    bmsAssembly.balanceControl(0.05);
-    if (bmsAssembly.getTotalVoltage() < (float)310.0){
-      bmsAssembly.balanceIntermoduleControl(0.3);
-    }
-      else{
-        bmsAssembly.dischargeControl(310.0);
-      }
-    uint16_t bufer[10] = {0,1,2,3,4,5,6,7,8,9};
+    // Балансировка
+    printf("Balance Control %f\n", (bmsAssembly.getTotalVoltage()/(bmsAssembly.getsize()*NCELLS)));
+    
+    bmsAssembly.balanceControl(bmsAssembly.getTotalVoltage()/(bmsAssembly.getsize()*NCELLS), 0.05);
+    
+//    uint16_t* array;
+//    array = new uint16_t [100];
+//    array[0] = 100;
+//    printf("Balance Control %d\n", array[0]);
+
+//    SpiPacket packet((uint16_t)100, (uint16_t)0, (uint8_t)1, SPI_MODE_0, MODE_8BIT, (uint16_t)600);
+//    packet.putTxByte(1);
+    // Разряд
+//    if (bmsAssembly.getTotalVoltage() < (float)310.0){
+//      bmsAssembly.balanceIntermoduleControl(0.3);
+//    }
+//      else{
+        bmsAssembly.dischargeControl(2.6);
+//      }
+/*    uint16_t bufer[10] = {0,1,2,3,4,5,6,7,8,9};
     ByteStoragePacket packet(bufer, 5, 0, ACTION_READ);
      osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
 
@@ -120,55 +135,9 @@ void StartTask500mls(void const * argument)
     byteStorageController.transferPacket(&packet);
     printf("Byte Storage Packet waiting semaphore\n");
      osSemaphoreWait(packet.retSetmaphore(), osWaitForever);
-
-      
+*/
     osSemaphoreRelease(binarySemTSK1000mls);
-
-
-//    bms0.bypassControl(0xAA);
-//    bms0.dischargeControl(0xAA);
-//    bms0.closingControl(0xAA);
-    
-/*    mram.resetWriteProtect();
-    mram.writeEnable();   
-    mram.readStatusRegister();
-    mram.writeDataBytes();
-    mram.readDataBytes();*/
-/*    bms0.dischargeControl(0x0);
-    bms1.dischargeControl(0);
-    bms2.dischargeControl(0);
-    bms3.dischargeControl(0);
-    bms4.dischargeControl(0);
-    bms5.dischargeControl(0);
-    bms6.dischargeControl(0);
-    bms7.dischargeControl(0);
-    bms8.dischargeControl(0);
-    bms9.dischargeControl(0);
-    bms10.dischargeControl(0);
-
-    bms0.closingControl(0);
-    bms1.closingControl(0);
-    bms2.closingControl(0);
-    bms3.closingControl(0);
-    bms4.closingControl(0);
-    bms5.closingControl(0);
-    bms6.closingControl(0);
-    bms7.closingControl(0);
-    bms8.closingControl(0);
-    bms9.closingControl(0);
-    bms10.closingControl(0);*/
-
-/*    bms0.balanceControl(0xFFF);
-    bms1.balanceControl(0xFFF);
-    bms2.balanceControl(0xFFF);
-    bms3.balanceControl(0xFFF);
-    bms4.balanceControl(0xFFF);
-    bms5.balanceControl(0xFFF);
-    bms6.balanceControl(0xFFF);
-    bms7.balanceControl(0xFFF);
-    bms8.balanceControl(0xFFF);
-    bms9.balanceControl(0xFFF);
-    bms10.balanceControl(0xFFF);*/
+//    printf("TSK500 stop\n\n");
 
   }
 }

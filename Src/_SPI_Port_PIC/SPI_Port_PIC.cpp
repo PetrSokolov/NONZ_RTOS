@@ -20,6 +20,10 @@ void SpiPortPic::init (void)
 {
 //SpiPacket(uint16_t sizeBuferTx, uint16_t sizeBuferRx, uint8_t chipSelect, uint8_t spiMode, uint16_t spiFrequency)
   SpiPacket packet(4, 0, _chipSelect, _spiMode, MODE_8BIT, _spiFrequency);
+  if (packet.getAllocateError() == true){
+    printf("Allocate Error! ");
+    return;
+  }
 
   /* bugfix сделать разрешение буферов отдельно*/
   if (!(GPIOB->ODR & BIT_0)){

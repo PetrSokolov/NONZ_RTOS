@@ -19,7 +19,9 @@ void StartTaskDcBus(void const * argument)
   for(;;)
   {
     //dcBusCommand = osMessageGet(dcBus.retQueueDcBus(), osWaitForever);  
-    xStatus = xQueueReceive(dcBus.retQueueDcBus(), &dcBusCommand, osWaitForever);  
+    xStatus = xQueueReceive(dcBus.retQueueDcBus(), &dcBusCommand, osWaitForever); 
+//    printf("TSKdcBus start\n");
+    
     if (xStatus == pdPASS) {
 //      switch(dcBusCommand.value.v){
       switch(dcBusCommand){
@@ -28,11 +30,13 @@ void StartTaskDcBus(void const * argument)
         case COMMAND1:   { printf("DcBus Command 1\n"); }break;
       }
     }
+//    printf("TSKdcBus stop\n\n");
     /* Принудительный вызов планировщика, позволяет
     * выполняться другой задаче.
     * Переключение на другую задачу произойдет быстрее,
-    * чем окончится текущий квант времени. */
+    * чем окончится текущий квант времени.
     taskYIELD();
+     */
   }
 
 
